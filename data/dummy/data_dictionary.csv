@@ -1,0 +1,13 @@
+﻿column,type,description
+student_id,int,비식별 학생 ID
+midterm_score,float,중간고사 성적(0~100)
+final_score,float (NaN allowed),"기말고사 성적(0~100), 학기 중간이면 NaN"
+performance_score,float,수행평가 성적(0~100)
+assignment_count,int,과제 제출 횟수(0~8 가정)
+participation_level,category(str),수업 참여도(상/중/하)
+question_count,int,수업 중 질문 횟수
+night_study,int(0/1),야간자율학습 참여 여부(0/1)
+absence_count,int,결석 횟수
+behavior_score,int,상벌점(-10~10)
+achievement_rate,float (computed),"성취율(사용 가능한 점수만 평균, 예시)"
+at_risk,int (computed),"최성보 위험군(성취율<40 또는 결석>=1/3, 예시)"
