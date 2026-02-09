@@ -1,4 +1,4 @@
-# edutech-learning-analysis
+# edutech-risk-prediction
 
 정보·컴퓨터 교과에서 **최소성취수준 보장지도(최성보) 대상 학생을 학기 중간 시점에 사전 예측**하기 위한  
 EduTech 데이터 분석 및 AI 예측 프로젝트입니다.
