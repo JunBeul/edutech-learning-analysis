@@ -112,11 +112,12 @@ def fill_missing(
     df: pd.DataFrame,
     numeric_strategy: str = "median",
     numeric_cols: Optional[List[str]] = None,
+    all_nan_fill_value: float = 0.0,
 ) -> pd.DataFrame:
     """
-    numeric_strategy: median | mean
-    지정된 numeric_cols만 채움. (final_score NaN은 유지할 수도 있지만,
-    모델 입력에서는 채우는 게 편하므로 기본값은 numeric 전체 채움)
+    Fill missing values for numeric columns using median/mean.
+    If a column is ALL-NaN (e.g., final_score in midterm snapshot),
+    fill it with a constant fallback (default=0.0).
     """
     out = df.copy()
 
@@ -126,12 +127,19 @@ def fill_missing(
     for col in numeric_cols:
         if col not in out.columns:
             continue
+
+        # 전부 NaN이면 median/mean도 NaN이므로 fallback 사용
+        if out[col].isna().all():
+            out[col] = out[col].fillna(all_nan_fill_value)
+            continue
+
         if numeric_strategy == "median":
             value = out[col].median()
         elif numeric_strategy == "mean":
             value = out[col].mean()
         else:
             raise ValueError("numeric_strategy must be 'median' or 'mean'")
+
         out[col] = out[col].fillna(value)
 
     return out
