@@ -295,12 +295,13 @@ reports/prediction_report.csv
 
 예측 리포트는 다음 컬럼으로 구성됩니다.
 
-| Column     | Description         |
-| ---------- | ------------------- |
-| student_id | 학생 ID             |
-| risk_proba | 위험군 확률         |
-| risk_level | High / Medium / Low |
-| action     | 권장 개입 전략      |
+| Column      | Description                                 |
+| ----------- | ------------------------------------------- |
+| student_id  | 학생 ID                                     |
+| risk_proba  | 위험군 확률                                 |
+| risk_level  | High / Medium / Low                         |
+| action      | 권장 개입 전략                              |
+| top_reasons | 위험군 판단에 영향을 준 주요 요인(최대 3개) |
 
 ---
 
