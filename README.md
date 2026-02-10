@@ -261,3 +261,63 @@ reports/tables/
 - 실제 학생 데이터 비공개
 - 저장소에는 더미 데이터만 포함
 - 분석 결과는 집계·익명화하여 보고
+
+---
+
+## Quickstart — Risk Prediction Report
+
+예측 리포트는 아래 2단계로 생성할 수 있습니다.
+
+### 1) 모델 학습 및 저장
+
+```bash
+python scripts/train_model.py
+
+```
+
+저장경로
+
+```text
+models/logistic_model.joblib
+```
+
+### 2) 예측 리포트 생성
+
+```bash
+python scripts/generate_prediction_report.py
+```
+
+출력 파일:
+
+```text
+reports/prediction_report.csv
+```
+
+예측 리포트는 다음 컬럼으로 구성됩니다.
+
+| Column     | Description         |
+| ---------- | ------------------- |
+| student_id | 학생 ID             |
+| risk_proba | 위험군 확률         |
+| risk_level | High / Medium / Low |
+| action     | 권장 개입 전략      |
+
+---
+
+본 리포트는 학기 중간 시점 데이터만으로<br>
+최성보 위험군 예비군을 조기 선별하기 위한 목적으로 생성됩니다.
+
+---
+
+# .gitignore (권장)
+
+없으면 생성 후 추가:
+
+```gitignore
+# trained models
+models/*.joblib
+
+# generated reports
+reports/tables/prediction_report_*.csv
+
+```
