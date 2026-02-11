@@ -15,7 +15,7 @@ FEATURE_COLS = [
     "participation_level_num",      # 수업 참여도 (상=2/중=1/하=0)
 ]
 
-SCORE_RULE = {                  # 성취율 계산용 기준값 (유저 입력)
+EVALUATION_POLICY = {           # 성취율 계산용 기준값 (유저 입력)
     "threshold": 0.40,          # T : 최성보 성취율 기준(0~1)
     "midterm_max": 100,         # 중간고사 만점
     "midterm_weight": 40,       # %
@@ -23,4 +23,5 @@ SCORE_RULE = {                  # 성취율 계산용 기준값 (유저 입력)
     "final_weight": 40,         # %
     "performance_max": 100,     # 수행평가 만점
     "performance_weight": 20,   # %
+    "total_classes": 160,       # 총 수업 횟수
 }

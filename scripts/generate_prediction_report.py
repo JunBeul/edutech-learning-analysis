@@ -8,6 +8,7 @@ python -m scripts.generate_prediction_report
 from pathlib import Path
 import sys
 from datetime import datetime
+from math import floor
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -15,7 +16,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 import joblib
 import pandas as pd
 
-from src.config import FEATURE_COLS, SCORE_RULE
+from src.config import FEATURE_COLS, EVALUATION_POLICY
 from src.preprocessing import load_csv, preprocess_pipeline, basic_cleaning
 
 DATA_PATH = PROJECT_ROOT / "data/dummy/dummy_midterm_like_labeled.csv"
@@ -114,7 +115,7 @@ def main() -> pd.DataFrame:
 
     df_result["top_reasons"] = df_result.apply(build_reasons, axis=1)
     
-    # 7) Score guidance message (closure using SCORE_RULE)
+    # 7) Score guidance message (closure using EVALUATION_POLICY)
     def clamp_score(x: float, smax: float) -> float:
         # 필요한 점수가 0 미만이면 0, 만점 초과면 만점으로 클램프
         if x < 0:
@@ -126,15 +127,15 @@ def main() -> pd.DataFrame:
     def to_w(pct: float) -> float:
         return float(pct) / 100.0
     
-    T = float(SCORE_RULE["threshold"])
+    T = float(EVALUATION_POLICY["threshold"])
 
-    mmax = float(SCORE_RULE["midterm_max"])
-    fmax = float(SCORE_RULE["final_max"])
-    pmax = float(SCORE_RULE["performance_max"])
+    mmax = float(EVALUATION_POLICY["midterm_max"])
+    fmax = float(EVALUATION_POLICY["final_max"])
+    pmax = float(EVALUATION_POLICY["performance_max"])
 
-    wm = to_w(SCORE_RULE["midterm_weight"])
-    wf = to_w(SCORE_RULE["final_weight"])
-    wp = to_w(SCORE_RULE["performance_weight"])
+    wm = to_w(EVALUATION_POLICY["midterm_weight"])
+    wf = to_w(EVALUATION_POLICY["final_weight"])
+    wp = to_w(EVALUATION_POLICY["performance_weight"])
     
     w_sum = wm + wf + wp
     if abs(w_sum - 1.0) > 1e-6:
@@ -204,7 +205,17 @@ def main() -> pd.DataFrame:
 
     df_result["score_guidance"] = df_result.apply(score_guidance, axis=1)
     
-    # 8) Column order (readability)
+    # 8) 결석 한도 안내
+    total_classes = int(EVALUATION_POLICY["total_classes"])
+    absence_limit = floor(total_classes / 3)
+
+    df_result["absence_limit"] = absence_limit
+    
+    # absence_count가 결측/문자열일 수 있으므로 안전 변환
+    absn = pd.to_numeric(df_result.get("absence_count"), errors="coerce").fillna(0).astype(int)
+    df_result["remaining_absence_allowance"] = absence_limit - absn
+    
+    # 9) Column order (readability)
     preferred_cols = [
         "student_id",
         "risk_proba",
@@ -212,6 +223,7 @@ def main() -> pd.DataFrame:
         "top_reasons",
         "score_guidance",
         "action",
+        "absence_limit",
         "participation_risk_score",
         "participation_flag",
     ]
@@ -222,7 +234,7 @@ def main() -> pd.DataFrame:
     )
     df_result = df_result[save_cols]
 
-    # 8) Save
+    # 10) Save
     today = datetime.now().strftime("%Y%m%d")
     output_path = OUTPUT_DIR / f"prediction_report_{today}.csv"
     df_result.to_csv(output_path, index=False, encoding="utf-8-sig")
