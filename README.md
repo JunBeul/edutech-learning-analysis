@@ -42,19 +42,19 @@ EduTech 데이터 분석 및 AI 예측 프로젝트입니다.
 > 학기 중간 스냅샷에서 `final_score`는 결측(NaN)일 수 있습니다.  
 > 본 저장소에는 개인정보 보호를 위해 더미 데이터만 포함됩니다.
 
-| Column              | Description                             |
-| ------------------- | --------------------------------------- |
-| student_id          | 비식별 학생 ID                          |
-| midterm_score       | 중간고사 성적                           |
-| final_score         | 기말고사 성적 (결측 허용)               |
-| performance_score   | 수행평가 성적                           |
-| assignment_count    | 과제 제출 횟수                          |
-| participation_level | 수업 참여도 (상/중/하)                  |
-| question_count      | 질문 횟수                               |
-| night_study         | 야간자율학습 참여 여부 (0/1)            |
-| absence_count       | 결석 횟수                               |
-| behavior_score      | 상벌점                                  |
-| at_risk             | 최성보 위험군 라벨(조기 예측 대상, 0/1) |
+| Column              | Description                              |
+| ------------------- | ---------------------------------------- |
+| student_id          | 비식별 학생 ID                           |
+| midterm_score       | 중간고사 성적 (결측 허용)                |
+| final_score         | 기말고사 성적 (결측 허용)                |
+| performance_score   | 수행평가 성적 (결측 허용)                |
+| assignment_count    | 과제 제출 횟수                           |
+| participation_level | 수업 참여도 (상/중/하)                   |
+| question_count      | 질문 횟수                                |
+| night_study         | 야간자율학습 참여 여부 (0/1)             |
+| absence_count       | 결석 횟수                                |
+| behavior_score      | 상벌점                                   |
+| at_risk             | 최성보 위험군 라벨 (조기 예측 대상, 0/1) |
 
 ---
 
