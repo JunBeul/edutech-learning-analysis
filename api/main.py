@@ -33,8 +33,8 @@ def health():
 
 @app.post("/predict")
 async def predict(
-    file: UploadFile = File(...),
-    policy: str = Form(...),   # ★ multipart JSON 문자열
+    file: UploadFile = File(...),   # '...'는 필수 항목임을 나타냄, Ellipsis는 한국어로 '생략'이라는 뜻
+    policy: str = Form(...),   # multipart JSON 문자열
 ):
     try:
         # 1. CSV → DataFrame
