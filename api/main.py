@@ -68,6 +68,7 @@ async def predict(
     file: UploadFile = File(...),
     policy: str = Form(...),   # multipart JSON 문자열
     # policy test : {"threshold": 0.40,"midterm_max": 100,"midterm_weight": 40,"final_max": 100,"final_weight": 40,"performance_max": 100,"performance_weight": 20,"total_classes": 160}
+    mode: str = "full",   # compact | full
 ):
     try:
         # 1. 파일 읽기
@@ -100,6 +101,25 @@ async def predict(
         # 5. 공통 로직 호출
         df_result = enrich_report(df_result, policy_obj)
         
+        # 모드별 컬럼 선택
+        if mode == "compact":
+            compact_cols = [
+                "student_id",
+                "risk_level",
+                "risk_proba",
+                "top_reasons",
+                "score_guidance",
+                "action",
+                "remaining_absence_allowance",
+            ]
+
+            # 존재하는 컬럼만 유지 (스키마 방어)
+            compact_cols = [c for c in compact_cols if c in df_result.columns]
+            df_response = df_result[compact_cols]
+
+        else:
+            df_response = df_result
+        
         # 6. CSV 저장
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         token = uuid.uuid4().hex[:8]
@@ -118,7 +138,7 @@ async def predict(
             "rows": len(df_result),
             "report_filename": report_filename,
             "report_url": report_url,
-            "data": safe_json_df(df_result).to_dict(orient="records"),
+            "data": safe_json_df(df_response).to_dict(orient="records"),
         }
 
     except Exception as e:
