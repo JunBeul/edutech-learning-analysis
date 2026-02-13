@@ -70,10 +70,12 @@ async def predict(
     # policy test : {"threshold": 0.40,"midterm_max": 100,"midterm_weight": 40,"final_max": 100,"final_weight": 40,"performance_max": 100,"performance_weight": 20,"total_classes": 160}
 ):
     try:
-        # 1. CSV → DataFrame
-        df_raw = pd.read_csv(file.file)
-        if df_raw.content_type != "text/csv":
+        # 1. 파일 읽기
+        if file.content_type != "text/csv":
             raise HTTPException(status_code=400, detail="CSV 파일만 업로드 가능합니다.")
+        
+        # CSV → DataFrame
+        df_raw = pd.read_csv(file.file)
 
         # 2. 전처리
         df_processed = preprocess_pipeline(df_raw)
