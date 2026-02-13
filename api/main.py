@@ -72,6 +72,8 @@ async def predict(
     try:
         # 1. CSV → DataFrame
         df_raw = pd.read_csv(file.file)
+        if df_raw.content_type != "text/csv":
+            raise HTTPException(status_code=400, detail="CSV 파일만 업로드 가능합니다.")
 
         # 2. 전처리
         df_processed = preprocess_pipeline(df_raw)
