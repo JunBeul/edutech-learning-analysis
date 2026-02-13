@@ -3,3 +3,23 @@ models/*.joblib
 
 # generated reports
 reports/tables/prediction_report_*.csv
+
+# python cache
+__pycache__/
+*.py[cod]
+
+# virtual environments
+venv/
+.venv/
+
+# node
+node_modules/
+
+# environment files
+.env
+.env.*
+!.env.example
+
+# misc
+*.log
+.DS_Store
