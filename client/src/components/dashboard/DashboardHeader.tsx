@@ -28,7 +28,7 @@ export default function DashboardHeader({ onOpenUpload, onOpenColumns, reportUrl
 
 	return (
 		<header className={`dashboard_header ${isScrolled ? 'is-scrolled' : ''}`}>
-			<h2 style={{ marginRight: 'auto' }}>최소성취수준 보장지도 예측 AI</h2>
+			<h2>최소성취수준 보장지도 예측 AI</h2>
 
 			<button onClick={onOpenUpload}>파일 업로드</button>
 			<button onClick={onOpenColumns}>컬럼 필터</button>

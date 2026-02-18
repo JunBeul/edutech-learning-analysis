@@ -4,7 +4,8 @@
 	display: flex;
 	gap: 8px;
 	align-items: center;
-	height: 120px;
+	min-height: 120px;
+	height: auto;
 	width: 100%;
 	position: sticky;
 	top: 0;
@@ -17,10 +18,11 @@
 
 	h2 {
 		font-size: 3rem;
+		margin-right: auto;
 	}
 
 	&.is-scrolled {
-		height: 60px;
+		min-height: 60px;
 		box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.15);
 
 		h2 {
@@ -31,21 +33,24 @@
 
 @media (max-width: $mobile) {
 	.dashboard_header {
-		display: flex;
-		position: relative;
-		height: 80px;
+		gap: 0;
+		position: sticky;
+		min-height: 80px;
+		height: auto;
 		text-align: center;
+		padding: 8px;
 
 		h2 {
-			width: 100%;
 			font-size: 24px;
+			margin: 0 auto;
 		}
+
 		button {
 			display: none;
 		}
 
 		&.is-scrolled {
-			height: 40px;
+			min-height: 40px;
 			box-shadow: none;
 
 			h2 {
