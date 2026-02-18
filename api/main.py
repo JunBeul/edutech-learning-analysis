@@ -31,6 +31,7 @@ app = FastAPI(title="EduTech Risk Prediction API")
 # 기본: 로컬 개발 환경(React)
 default_origins = [
     "http://localhost:5173",  # Vite
+    "http://localhost:5174",  # Vite
     "http://localhost:3000",  # CRA (혹시 사용할 경우)
 ]
 # 배포 시: 환경변수로 오버라이드 가능 (콤마 구분)
