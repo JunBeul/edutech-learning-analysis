@@ -1,6 +1,7 @@
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useMemo, useState } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import UploadModal from '../components/UploadModal';
+import ColumnSelectorModal from '../components/ColumnSelectorModal';
 
 type PredictResponse = {
 	rows: number;
@@ -9,37 +10,55 @@ type PredictResponse = {
 	data: Record<string, unknown>[];
 };
 
+type DashboardLocationState = {
+	result?: PredictResponse;
+};
+
+const PRIORITY_COLUMNS = ['student_id', 'risk_proba', 'risk_level', 'top_reasons', 'action', 'score_guidance', 'remaining_absence_allowance'];
+
 export default function DashboardPage() {
 	const location = useLocation();
-	const navigate = useNavigate();
 	const [open, setOpen] = useState(false);
+	const [colModalOpen, setColModalOpen] = useState(false);
+	const [columnState, setColumnState] = useState<{ reportKey: string; cols: string[] }>({
+		reportKey: '',
+		cols: []
+	});
 
-	const result = (location.state as any)?.result as PredictResponse | undefined;
+	const result = (location.state as DashboardLocationState | null)?.result;
 
-	// 새로고침 등으로 state가 없으면 홈으로
-	if (!result) {
-		navigate('/', { replace: true });
-		return null;
-	}
-
-	const columns = useMemo(() => {
-		// 기본 표시 컬럼 + 추천 4개
-		const preferred = ['student_id', 'risk_proba', 'risk_level', 'top_reasons', 'action', 'score_guidance', 'remaining_absence_allowance'];
-		const existing = preferred.filter((c) => result.data?.[0]?.hasOwnProperty(c));
-		return existing;
+	const allColumns = useMemo(() => {
+		if (!result) return [];
+		return Object.keys(result.data[0] ?? {});
 	}, [result]);
+
+	const defaultCols = useMemo(() => {
+		return PRIORITY_COLUMNS.filter((column) => allColumns.includes(column));
+	}, [allColumns]);
+
+	const reportKey = result?.report_filename ?? '';
+	const visibleColumns = columnState.reportKey === reportKey ? columnState.cols : defaultCols;
+
+	const handleColumnsChange = (cols: string[]) => {
+		setColumnState({ reportKey, cols });
+	};
+
+	if (!result) {
+		return <Navigate to='/' replace />;
+	}
 
 	return (
 		<div>
 			<header style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
 				<h2 style={{ marginRight: 'auto' }}>대시보드</h2>
 
-				{/* PC: 헤더 버튼 / Mobile: 나중에 하단바로 분기 */}
 				<button onClick={() => setOpen(true)}>파일 업로드</button>
 
 				<a href={`http://127.0.0.1:8000${result.report_url}`} download>
 					CSV 다운로드
 				</a>
+
+				<button onClick={() => setColModalOpen(true)}>+ 컬럼</button>
 			</header>
 
 			<section>
@@ -48,16 +67,16 @@ export default function DashboardPage() {
 				<table>
 					<thead>
 						<tr>
-							{columns.map((c) => (
-								<th key={c}>{c}</th>
+							{visibleColumns.map((column) => (
+								<th key={column}>{column}</th>
 							))}
 						</tr>
 					</thead>
 					<tbody>
 						{result.data.map((row, i) => (
 							<tr key={i}>
-								{columns.map((c) => (
-									<td key={c}>{String((row as any)[c] ?? '')}</td>
+								{visibleColumns.map((column) => (
+									<td key={column}>{String(row[column] ?? '')}</td>
 								))}
 							</tr>
 						))}
@@ -66,6 +85,8 @@ export default function DashboardPage() {
 			</section>
 
 			{open && <UploadModal onClose={() => setOpen(false)} onSuccessNavigateTo='/dashboard' />}
+
+			{colModalOpen && <ColumnSelectorModal allColumns={allColumns} visibleColumns={visibleColumns} onChange={handleColumnsChange} onClose={() => setColModalOpen(false)} />}
 		</div>
 	);
 }
