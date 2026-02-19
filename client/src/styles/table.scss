@@ -1,10 +1,10 @@
 @use './breakpoints' as *;
 
-.table-wrapper {
-	overflow: visible;
+.table_wrapper {
+	width: 100%;
 }
 
-.dashboard-table {
+.dashboard_table {
 	width: 100%;
 	border-collapse: collapse;
 
@@ -14,7 +14,6 @@
 		border-bottom: 1px solid #eee;
 		text-align: left;
 	}
-
 	thead th {
 		background: #f9fafb;
 		position: sticky;
@@ -33,7 +32,7 @@
 }
 
 @media (max-width: $mobile) {
-	.dashboard-table thead th {
+	.dashboard_table thead th {
 		top: 40px;
 	}
 }

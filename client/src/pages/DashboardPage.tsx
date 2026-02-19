@@ -161,8 +161,8 @@ export default function DashboardPage() {
 
 			<section>
 				<p style={{ margin: '6px 12px' }}>rows: {filteredRows.length}</p>
-				<div className='table-wrapper'>
-					<table className='dashboard-table'>
+				<div className='table_wrapper'>
+					<table className='dashboard_table'>
 						<thead>
 							<tr>
 								{visibleColumns.map((c) => (
