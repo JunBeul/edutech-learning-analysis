@@ -1,5 +1,7 @@
+@use './breakpoints' as *;
+
 .table-wrapper {
-	overflow-x: auto;
+	overflow: visible;
 }
 
 .dashboard-table {
@@ -13,18 +15,25 @@
 		text-align: left;
 	}
 
-	thead {
+	thead th {
 		background: #f9fafb;
 		position: sticky;
-		top: 0;
+		top: 60px;
+		z-index: 6;
+		transition: none;
 	}
 
 	tbody tr {
-		transition: background 0.15s;
 		cursor: pointer;
 
 		&:hover {
 			background: #f3f4f6;
 		}
+	}
+}
+
+@media (max-width: $mobile) {
+	.dashboard-table thead th {
+		top: 40px;
 	}
 }

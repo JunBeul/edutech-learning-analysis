@@ -1,3 +1,5 @@
+@use './breakpoints' as *;
+
 .drawer_container {
 	z-index: 20;
 
@@ -5,7 +7,8 @@
 	top: 1.5%;
 	right: 0;
 	height: 97%;
-	width: min(45%, 100vw);
+	width: 45%;
+	min-width: 600px;
 	background: white;
 	box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
 	overflow-y: auto;
@@ -51,5 +54,17 @@
 		.row_participation_flag {
 			display: none;
 		}
+	}
+}
+
+@media (max-width: $mobile) {
+	.drawer_container {
+		width: calc(100vw - 12px);
+		min-width: 0;
+		height: calc(100vh - 12px);
+		top: 50%;
+		left: 50%;
+		right: auto;
+		transform: translate(-50%, -50%);
 	}
 }

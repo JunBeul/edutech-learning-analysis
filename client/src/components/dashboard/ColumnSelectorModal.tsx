@@ -28,7 +28,7 @@ export default function ColumnSelectorModal({ allColumns, visibleColumns, onChan
 				<OverlayHeader title='컬럼 선택' onClose={onClose} className='modal_header' />
 				<div className='modal_body'>
 					{allColumns.map((col) => (
-						<label key={col} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+						<label key={col} className='modal_list_item'>
 							<input type='checkbox' checked={visibleColumns.includes(col)} onChange={() => toggle(col)} />
 							{labelOf(col)}
 						</label>
@@ -38,4 +38,3 @@ export default function ColumnSelectorModal({ allColumns, visibleColumns, onChan
 		</div>
 	);
 }
-

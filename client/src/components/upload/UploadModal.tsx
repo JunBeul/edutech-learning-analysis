@@ -103,60 +103,60 @@ export default function UploadModal({ onClose, onSuccessNavigateTo }: Props) {
 			<div className='modal_container' onClick={(e) => e.stopPropagation()}>
 				<OverlayHeader title='파일 업로드' onClose={onClose} className='modal_header' />
 				<div className='modal_body'>
-					<input type='file' accept='.csv' onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+					<input className='modal_file_input' type='file' accept='.csv' onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
 
-					<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+					<div className='modal_grid_item'>
 						<label>
-							최성보 비율
-							<input value={form.threshold} onChange={(e) => setField('threshold', e.target.value)} />
+							<span className='title'>최성보 비율</span>
+							<input className='modal_text_input' value={form.threshold} onChange={(e) => setField('threshold', e.target.value)} />
 						</label>
 
 						<label>
-							총 수업 횟수
-							<input value={form.total_classes} onChange={(e) => setField('total_classes', e.target.value)} />
+							<span className='title'>총 수업 횟수</span>
+							<input className='modal_text_input' value={form.total_classes} onChange={(e) => setField('total_classes', e.target.value)} />
 						</label>
 
 						<label>
-							중간 만점
-							<input value={form.midterm_max} onChange={(e) => setField('midterm_max', e.target.value)} />
+							<span className='title'>중간 만점</span>
+							<input className='modal_text_input' value={form.midterm_max} onChange={(e) => setField('midterm_max', e.target.value)} />
 						</label>
 
 						<label>
-							중간 반영(%)
-							<input value={form.midterm_weight} onChange={(e) => setField('midterm_weight', e.target.value)} />
+							<span className='title'>중간 반영(%)</span>
+							<input className='modal_text_input' value={form.midterm_weight} onChange={(e) => setField('midterm_weight', e.target.value)} />
 						</label>
 
 						<label>
-							기말 만점
-							<input value={form.final_max} onChange={(e) => setField('final_max', e.target.value)} />
+							<span className='title'>기말 만점</span>
+							<input className='modal_text_input' value={form.final_max} onChange={(e) => setField('final_max', e.target.value)} />
 						</label>
 
 						<label>
-							기말 반영(%)
-							<input value={form.final_weight} onChange={(e) => setField('final_weight', e.target.value)} />
+							<span className='title'>기말 반영(%)</span>
+							<input className='modal_text_input' value={form.final_weight} onChange={(e) => setField('final_weight', e.target.value)} />
 						</label>
 
 						<label>
-							수행 만점
-							<input value={form.performance_max} onChange={(e) => setField('performance_max', e.target.value)} />
+							<span className='title'>수행 만점</span>
+							<input className='modal_text_input' value={form.performance_max} onChange={(e) => setField('performance_max', e.target.value)} />
 						</label>
 
 						<label>
-							수행 반영(%)
-							<input value={form.performance_weight} onChange={(e) => setField('performance_weight', e.target.value)} />
+							<span className='title'>수행 반영(%)</span>
+							<input className='modal_text_input' value={form.performance_weight} onChange={(e) => setField('performance_weight', e.target.value)} />
 						</label>
 					</div>
-					{errors.length > 0 && (
-						<div style={{ padding: 8, border: '1px solid #ddd' }}>
-							<strong>입력 오류</strong>
-							<ul style={{ margin: 8 }}>
-								{errors.map((e, i) => (
-									<li key={i}>{e}</li>
-								))}
-							</ul>
-						</div>
-					)}
 				</div>
+				{errors.length > 0 && (
+					<div className='modal_errors'>
+						<div className='modal_errors_title'>입력 오류</div>
+						<ul style={{ margin: 8 }}>
+							{errors.map((e, i) => (
+								<li key={i}>{e}</li>
+							))}
+						</ul>
+					</div>
+				)}
 				<div className='modal_footer'>
 					<button onClick={onSubmit} disabled={!canSubmit}>
 						업로드
@@ -166,4 +166,3 @@ export default function UploadModal({ onClose, onSuccessNavigateTo }: Props) {
 		</div>
 	);
 }
-

@@ -1,3 +1,5 @@
+@use './breakpoints' as *;
+
 .filter_wapper {
 	width: max-content;
 	width: 260px;
@@ -8,6 +10,7 @@
 	padding: 12px;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	z-index: 5;
+
 	.fillter_header {
 		display: flex;
 		justify-content: space-between;
@@ -41,46 +44,79 @@
 			}
 		}
 	}
+
 	.filter_srot {
-		display: flex;
-		justify-content: space-between;
-		gap: 8px;
-		align-items: center;
 		margin-top: 12px;
 
-		button {
-			flex: 1;
-			padding: 6px 0;
-			border-radius: 4px;
-			border: 1px solid #eee;
-			background-color: #f9f9f9;
-			cursor: pointer;
-			text-align: center;
+		.filter_srot_header {
+			font-size: 14px;
+			font-weight: bold;
+			margin-bottom: 6px;
+		}
+		.filter_srot_content {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 8px;
 
-			&:hover {
-				background-color: #eee;
+			button {
+				padding: 6px 0;
+				border-radius: 4px;
+				border: 1px solid #eee;
+				background-color: #f9f9f9;
+				cursor: pointer;
+				text-align: center;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex: 1;
+				gap: 6px;
+
+				svg {
+					width: 24px;
+					height: 24px;
+					fill: #333;
+					transition: fill 0.15s ease;
+				}
+
+				&:hover {
+					background-color: #eee;
+				}
 			}
 		}
 	}
+
 	.filter_rowDel {
 		font-size: 12px;
 		margin-top: 12px;
+
 		.filter_rowDel_header {
 			margin-bottom: 6px;
 			font-size: 14px;
 			font-weight: bold;
 		}
+
 		.filter_rowDel_content {
 			border: 1px solid #eee;
 			border-radius: 8px;
 			padding: 8px;
 			max-height: 180px;
 			overflow-y: auto;
+
+			label {
+				margin-bottom: 6px;
+				font-size: 14px;
+				display: flex;
+				gap: 8px;
+				align-items: flex-start;
+			}
 		}
 	}
+
 	.filter_colDel {
 		margin-top: 12px;
 		text-align: center;
+
 		button {
 			cursor: pointer;
 			border-radius: 4px;
@@ -89,11 +125,39 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			color: #fff;
+			position: relative;
+			overflow: hidden;
+
 			svg {
-				fill: rgb(239, 68, 68);
+				fill: $color_red;
+				transition: opacity 0.15s ease;
 			}
+
+			&::after {
+				content: '열 삭제';
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				color: #fff;
+				font-size: 13px;
+				font-weight: 600;
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 0.15s ease;
+			}
+
 			&:hover {
-				background-color: rgba(239, 68, 68, 0.1);
+				background-color: $color_red;
+
+				svg {
+					opacity: 0;
+				}
+
+				&::after {
+					opacity: 1;
+				}
 			}
 		}
 	}

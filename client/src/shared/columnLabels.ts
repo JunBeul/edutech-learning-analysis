@@ -24,7 +24,7 @@ export const COLUMN_LABELS: Record<string, string> = {
 	// 파생값(프로젝트 내부)
 	participation_risk_score: '참여도 위험 점수',
 	participation_flag: '참여도 위험 여부',
-	remaining_absence_allowance: '남은 결석 허용 횟수',
+	remaining_absence_allowance: '남은 결석',
 
 	// 위험 라벨/모델 관련
 	at_risk: '위험군 여부',

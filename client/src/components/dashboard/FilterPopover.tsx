@@ -4,6 +4,8 @@ import '../../styles/filterPopover.scss';
 import { useEscapeClose } from '../../hooks/useEscapeClose';
 
 type SortDir = 'asc' | 'desc';
+const POPOVER_WIDTH = 260;
+const VIEWPORT_PADDING = 8;
 
 type Props = {
 	colKey: string;
@@ -21,7 +23,13 @@ export default function FilterPopover({ colKey, anchorRect, values, hiddenValues
 
 	const style = useMemo(() => {
 		const top = anchorRect.bottom + window.scrollY + 6;
-		const left = anchorRect.left + window.scrollX;
+		const rawLeft = anchorRect.left + window.scrollX;
+		const minLeft = window.scrollX + VIEWPORT_PADDING;
+		const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+		const scrollbarWidth = Math.max(0, window.innerWidth - viewportWidth);
+		const maxLeft = window.scrollX + window.innerWidth - scrollbarWidth - POPOVER_WIDTH - VIEWPORT_PADDING;
+		const safeMaxLeft = Math.max(minLeft, maxLeft);
+		const left = Math.min(Math.max(rawLeft, minLeft), safeMaxLeft);
 		return {
 			position: 'absolute' as const,
 			top,
@@ -41,8 +49,24 @@ export default function FilterPopover({ colKey, anchorRect, values, hiddenValues
 			</div>
 
 			<div className='filter_srot'>
-				<button onClick={() => onSort('asc')}>오름차순</button>
-				<button onClick={() => onSort('desc')}>내림차순</button>
+				<div className='filter_srot_header'>정렬</div>
+				<div className='filter_srot_content'>
+					<button onClick={() => onSort('asc')}>
+						<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' className='bi bi-sort-alpha-down-alt' viewBox='0 0 16 16'>
+							<path d='M12.96 7H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645z' />
+							<path fill-rule='evenodd' d='M10.082 12.629 9.664 14H8.598l1.789-5.332h1.234L13.402 14h-1.12l-.419-1.371zm1.57-.785L11 9.688h-.047l-.652 2.156z' />
+							<path d='M4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293z' />
+						</svg>
+						<div className='btn_text'>오름차순</div>
+					</button>
+					<button onClick={() => onSort('desc')}>
+						<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' className='bi bi-sort-alpha-down' viewBox='0 0 16 16'>
+							<path fill-rule='evenodd' d='M10.082 5.629 9.664 7H8.598l1.789-5.332h1.234L13.402 7h-1.12l-.419-1.371zm1.57-.785L11 2.687h-.047l-.652 2.157z' />
+							<path d='M12.96 14H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645zM4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293z' />
+						</svg>
+						<div className='btn_text'>내림차순</div>
+					</button>
+				</div>
 			</div>
 
 			<div className='filter_rowDel'>
@@ -51,9 +75,9 @@ export default function FilterPopover({ colKey, anchorRect, values, hiddenValues
 					{values.map((v) => {
 						const checked = !hiddenValues.has(v);
 						return (
-							<label key={v} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+							<label key={v}>
 								<input type='checkbox' checked={checked} onChange={() => onToggleValue(v)} />
-								<span style={{ fontSize: 13 }}>{v === '' ? '(빈값)' : v}</span>
+								<span>{v === '' ? '(빈값)' : v}</span>
 							</label>
 						);
 					})}

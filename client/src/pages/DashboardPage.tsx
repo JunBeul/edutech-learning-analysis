@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { labelOf } from '../shared/columnLabels';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
@@ -35,6 +35,7 @@ export default function DashboardPage() {
 	});
 	const [selectedRow, setSelectedRow] = useState<Record<string, unknown> | null>(null);
 	const [activeCol, setActiveCol] = useState<string | null>(null);
+	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 	const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
 
 	// column key -> hidden values
@@ -93,6 +94,59 @@ export default function DashboardPage() {
 
 	useBodyScrollLock(isScrollLockOpen);
 
+	useEffect(() => {
+		if (!anchorEl || !activeCol) return;
+
+		let rafId = 0;
+		let settleTimer = 0;
+		const updateAnchorRect = () => {
+			if (rafId) return;
+			rafId = window.requestAnimationFrame(() => {
+				rafId = 0;
+				if (!document.body.contains(anchorEl)) {
+					setActiveCol(null);
+					setAnchorEl(null);
+					setAnchorRect(null);
+					return;
+				}
+				setAnchorRect(anchorEl.getBoundingClientRect());
+			});
+		};
+
+		const updateAfterHeaderTransition = () => {
+			if (settleTimer) {
+				window.clearTimeout(settleTimer);
+			}
+			// dashboard header transition duration: 0.2s
+			settleTimer = window.setTimeout(() => {
+				updateAnchorRect();
+			}, 240);
+		};
+
+		const handleViewportChange = () => {
+			updateAnchorRect();
+			updateAfterHeaderTransition();
+		};
+
+		const headerEl = document.querySelector<HTMLElement>('.dashboard_header');
+		updateAnchorRect();
+		window.addEventListener('scroll', handleViewportChange, { passive: true, capture: true });
+		window.addEventListener('resize', handleViewportChange, { passive: true });
+		headerEl?.addEventListener('transitionend', handleViewportChange);
+
+		return () => {
+			if (rafId) {
+				window.cancelAnimationFrame(rafId);
+			}
+			if (settleTimer) {
+				window.clearTimeout(settleTimer);
+			}
+			window.removeEventListener('scroll', handleViewportChange, true);
+			window.removeEventListener('resize', handleViewportChange);
+			headerEl?.removeEventListener('transitionend', handleViewportChange);
+		};
+	}, [anchorEl, activeCol]);
+
 	const handleColumnsChange = (cols: string[]) => {
 		setColumnState({ reportKey, cols });
 	};
@@ -106,7 +160,7 @@ export default function DashboardPage() {
 			<DashboardHeader onOpenUpload={() => setOpen(true)} onOpenColumns={() => setColModalOpen(true)} reportUrl={result.report_url} />
 
 			<section>
-				<p>rows: {filteredRows.length}</p>
+				<p style={{ margin: '6px 12px' }}>rows: {filteredRows.length}</p>
 				<div className='table-wrapper'>
 					<table className='dashboard-table'>
 						<thead>
@@ -115,9 +169,10 @@ export default function DashboardPage() {
 									<th
 										key={c}
 										onClick={(e) => {
-											const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+											const target = e.currentTarget as HTMLElement;
 											setActiveCol(c);
-											setAnchorRect(rect);
+											setAnchorEl(target);
+											setAnchorRect(target.getBoundingClientRect());
 										}}
 										style={{ cursor: 'pointer' }}
 									>
@@ -184,10 +239,12 @@ export default function DashboardPage() {
 							return { reportKey, cols: currentCols.filter((x) => x !== activeCol) };
 						});
 						setActiveCol(null);
+						setAnchorEl(null);
 						setAnchorRect(null);
 					}}
 					onClose={() => {
 						setActiveCol(null);
+						setAnchorEl(null);
 						setAnchorRect(null);
 					}}
 				/>
