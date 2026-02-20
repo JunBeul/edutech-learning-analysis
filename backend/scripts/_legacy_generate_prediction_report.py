@@ -1,10 +1,10 @@
-"""
+﻿"""
 [LEGACY] Generate Risk Prediction Report
 참고용 스크립트입니다.
-현재는 src/report_logic.py 기반 구조를 사용합니다.
+현재는 backend/src/report_logic.py 기반 구조를 사용합니다.
 
 Usage:
-python -m scripts.generate_prediction_report
+python -m backend.scripts.generate_prediction_report
 """
 
 from pathlib import Path
@@ -12,14 +12,14 @@ import sys
 from datetime import datetime
 from math import floor
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import joblib
 import pandas as pd
 
-from src.config import FEATURE_COLS, EVALUATION_POLICY
-from src.preprocessing import load_csv, preprocess_pipeline, basic_cleaning
+from backend.src.config import FEATURE_COLS, EVALUATION_POLICY
+from backend.src.preprocessing import load_csv, preprocess_pipeline, basic_cleaning
 
 DATA_PATH = PROJECT_ROOT / "data/dummy/dummy_midterm_like_labeled.csv"
 MODEL_PATH = PROJECT_ROOT / "models/logistic_model.joblib"
@@ -246,3 +246,5 @@ def main() -> pd.DataFrame:
 
 if __name__ == "__main__":
     main()
+
+

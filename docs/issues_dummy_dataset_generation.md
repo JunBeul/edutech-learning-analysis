@@ -1,4 +1,4 @@
-# 더미 데이터셋 생성 이슈 정리
+﻿# 더미 데이터셋 생성 이슈 정리
 
 ---
 
@@ -98,5 +98,6 @@
 - `notebook/00_generate_dummy_dataset.ipynb`
 - `notebook/_legacy_00_generate_dummy_dataset.ipynb`
 - `notebook/02_risk_prediction.ipynb`
-- `scripts/train_model.py`
+- `backend/scripts/train_model.py`
 - `docs/issues_dummy_dataset_generation.md`
+

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Smoke Test — Preprocessing Pipeline
 
 Purpose:
@@ -7,7 +7,7 @@ Purpose:
 - Confirm label generation works
 
 Run:
-python scripts/smoke_test_preprocessing.py
+python backend/scripts/smoke_test_preprocessing.py
 """
 
 import sys
@@ -16,13 +16,13 @@ from pathlib import Path
 import pandas as pd
 
 # --- Path setup ---
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 print("PROJECT_ROOT:", PROJECT_ROOT)
 
 # --- Imports ---
-from src.preprocessing import load_csv, preprocess_pipeline
+from backend.src.preprocessing import load_csv, preprocess_pipeline
 
 
 def main():
@@ -79,3 +79,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

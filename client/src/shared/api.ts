@@ -1,4 +1,17 @@
-﻿export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const rawApiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').trim()
+const rawDummyCsvUrl = (import.meta.env.VITE_DUMMY_CSV_URL ?? '').trim()
+
+export const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, '')
+
+export function buildApiUrl(path: string): string {
+  if (/^https?:\/\//i.test(path)) return path
+
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  return API_BASE_URL ? `${API_BASE_URL}${normalizedPath}` : normalizedPath
+}
+
+export const DUMMY_CSV_URL =
+  rawDummyCsvUrl || buildApiUrl('/sample/dummy-midterm-like-labeled')
 
 interface PredictCsvParams {
   file: File
@@ -15,7 +28,7 @@ export async function predictCsv({
   formData.append('file', file)
   formData.append('policy', JSON.stringify(policyObj))
 
-  const url = `${API_BASE_URL}/predict?mode=${encodeURIComponent(mode)}`
+  const url = buildApiUrl(`/predict?mode=${encodeURIComponent(mode)}`)
 
   const res = await fetch(url, {
     method: 'POST',

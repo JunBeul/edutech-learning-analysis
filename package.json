@@ -7,8 +7,8 @@
 		"doc": "docs"
 	},
 	"scripts": {
-		"dev": "concurrently -n BACK,FRONT -c yellow,cyan \"python -m uvicorn api.main:app --reload --port 8000\" \"npm --prefix client run dev\"",
-		"dev:back": "python -m uvicorn api.main:app --reload --port 8000",
+		"dev": "concurrently -n BACK,FRONT -c yellow,cyan \"python -m uvicorn backend.api.main:app --reload --port 8000\" \"npm --prefix client run dev\"",
+		"dev:back": "python -m uvicorn backend.api.main:app --reload --port 8000",
 		"dev:front": "npm --prefix client run dev",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
@@ -28,3 +28,4 @@
 		"concurrently": "^9.2.1"
 	}
 }
+

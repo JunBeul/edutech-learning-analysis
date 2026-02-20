@@ -1,4 +1,4 @@
-# 백엔드/프론트엔드 가이던스 문구 책임 분리 이슈 정리
+﻿# 백엔드/프론트엔드 가이던스 문구 책임 분리 이슈 정리
 
 ---
 
@@ -89,9 +89,10 @@
 
 ## 관련 파일
 
-- `api/main.py`
-- `src/report_logic.py`
-- `scripts/generate_prediction_report.py`
-- `scripts/_legacy_generate_prediction_report.py`
+- `backend/api/main.py`
+- `backend/src/report_logic.py`
+- `backend/scripts/generate_prediction_report.py`
+- `backend/scripts/_legacy_generate_prediction_report.py`
 - `client/src/shared/columnLabels.ts`
 - `docs/issues_backend_frontend_guidance_design.md`
+

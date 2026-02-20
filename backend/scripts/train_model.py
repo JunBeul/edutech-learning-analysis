@@ -1,14 +1,14 @@
-"""
+﻿"""
 Train and save risk prediction model.
 
 Usage:
-python scripts/train_model.py
+python backend/scripts/train_model.py
 """
 
 from pathlib import Path
 import sys
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import joblib
@@ -17,8 +17,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 
-from src.config import FEATURE_COLS
-from src.preprocessing import load_csv, preprocess_pipeline
+from backend.src.config import FEATURE_COLS
+from backend.src.preprocessing import load_csv, preprocess_pipeline
 
 DATA_PATH = PROJECT_ROOT / "data/dummy/dummy_midterm_like_labeled.csv"
 MODEL_DIR = PROJECT_ROOT / "models"
@@ -48,3 +48,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

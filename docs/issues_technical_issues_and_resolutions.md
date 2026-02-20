@@ -1,4 +1,4 @@
-# Technical Issues and Resolutions 정리
+﻿# Technical Issues and Resolutions 정리
 
 ---
 
@@ -109,11 +109,12 @@
 
 ## 관련 파일
 
-- `src/preprocessing.py`
-- `src/report_logic.py`
-- `src/config.py`
-- `scripts/generate_prediction_report.py`
-- `scripts/smoke_test_preprocessing.py`
-- `scripts/train_model.py`
-- `api/main.py`
+- `backend/src/preprocessing.py`
+- `backend/src/report_logic.py`
+- `backend/src/config.py`
+- `backend/scripts/generate_prediction_report.py`
+- `backend/scripts/smoke_test_preprocessing.py`
+- `backend/scripts/train_model.py`
+- `backend/api/main.py`
 - `docs/issues_technical_issues_and_resolutions.md`
+

@@ -1,15 +1,15 @@
-"""
+﻿"""
 Generate Risk Prediction Report (Refactored)
 
-- 공통 리포트 로직(src/report_logic.py) 호출 기반
+- 공통 리포트 로직(backend/src/report_logic.py) 호출 기반
 - CSV → 전처리 → 모델 추론 → 리포트 컬럼 생성 → CSV 저장
 
 실행 예시:
-    python -m scripts.generate_prediction_report
+    python -m backend.scripts.generate_prediction_report
 
 정책 주입 예시:
-    python -m scripts.generate_prediction_report --data data/dummy/dummy_midterm_like_labeled.csv
-    python -m scripts.generate_prediction_report --policy-json '{\"threshold\":0.4,\"midterm_max\":100,\"midterm_weight\":40,\"final_max\":100,\"final_weight\":40,\"performance_max\":100,\"performance_weight\":20,\"total_classes\":160}'
+    python -m backend.scripts.generate_prediction_report --data data/dummy/dummy_midterm_like_labeled.csv
+    python -m backend.scripts.generate_prediction_report --policy-json '{\"threshold\":0.4,\"midterm_max\":100,\"midterm_weight\":40,\"final_max\":100,\"final_weight\":40,\"performance_max\":100,\"performance_weight\":20,\"total_classes\":160}'
 """
 
 from __future__ import annotations
@@ -23,12 +23,12 @@ import argparse
 import joblib
 import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.config import FEATURE_COLS, EVALUATION_POLICY
-from src.preprocessing import load_csv, preprocess_pipeline
-from src.report_logic import (
+from backend.src.config import FEATURE_COLS, EVALUATION_POLICY
+from backend.src.preprocessing import load_csv, preprocess_pipeline
+from backend.src.report_logic import (
     parse_policy_json,
     enrich_report,
     assign_risk_level,
@@ -85,7 +85,7 @@ def main() -> pd.DataFrame:
     df_result["risk_level"] = df_result["risk_proba"].apply(assign_risk_level)
     df_result["action"] = df_result["risk_level"].apply(assign_action)
 
-    # 4) Policy 적용(우선순위: --policy-json > src.config.EVALUATION_POLICY)
+    # 4) Policy 적용(우선순위: --policy-json > backend.src.config.EVALUATION_POLICY)
     if args.policy_json.strip():
         policy_json = args.policy_json
     else:
@@ -126,3 +126,5 @@ def main() -> pd.DataFrame:
 
 if __name__ == "__main__":
     main()
+
+

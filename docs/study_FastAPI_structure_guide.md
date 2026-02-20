@@ -1,6 +1,6 @@
-# FastAPI 구조 정리 (CORS, GET, POST)
+﻿# FastAPI 구조 정리 (CORS, GET, POST)
 
-이 문서는 현재 프로젝트의 `api/main.py`를 기준으로 FastAPI의 기본 구조를 공부하기 쉽게 정리한 문서입니다.
+이 문서는 현재 프로젝트의 `backend/api/main.py`를 기준으로 FastAPI의 기본 구조를 공부하기 쉽게 정리한 문서입니다.
 
 ---
 
@@ -180,4 +180,5 @@ def predict(req: PredictRequest):
 3. 조회는 GET, 처리/생성은 POST로 분리했는가?
 4. 파일/폼 요청에서 `File()`/`Form()`을 사용했는가?
 5. 실패 케이스에 `HTTPException` 상태코드를 명확히 정의했는가?
+
 

@@ -1,4 +1,4 @@
-# EduTech Risk Prediction
+﻿# EduTech Risk Prediction
 
 학기 중간 시점의 학습/행동 데이터를 기반으로 최소 성취수준 미도달 위험 학생을 조기 식별하는 End-to-End 프로젝트입니다.
 
@@ -48,7 +48,7 @@
 - `assignment_count`, `participation_level`, `question_count`
 - `night_study`, `absence_count`, `behavior_score`
 
-전처리(`src/preprocessing.py`) 수행 항목:
+전처리(`backend/src/preprocessing.py`) 수행 항목:
 
 - 스키마 검증
 - 기본 정제 및 수치형 변환
@@ -64,10 +64,10 @@
 
 ## 5. 모델 및 성능
 
-학습 스크립트: `scripts/train_model.py`
+학습 스크립트: `backend/scripts/train_model.py`
 
 - 모델: Logistic Regression (`class_weight='balanced'`)
-- 입력 피처: `src/config.py`의 `FEATURE_COLS`
+- 입력 피처: `backend/src/config.py`의 `FEATURE_COLS`
 - 결측 처리: `SimpleImputer(strategy='constant', fill_value=0)`
 
 5-Fold CV 평균 성능 (`reports/tables/cv_metrics_logistic.csv`):
@@ -160,13 +160,13 @@ npm run dev
 모델 학습:
 
 ```bash
-python scripts/train_model.py
+python backend/scripts/train_model.py
 ```
 
 리포트 생성:
 
 ```bash
-python scripts/generate_prediction_report.py
+python backend/scripts/generate_prediction_report.py
 ```
 
 출력:
@@ -178,10 +178,10 @@ python scripts/generate_prediction_report.py
 
 ```text
 edutech-risk-prediction/
-+-- api/           # FastAPI app
++-- backend/api/           # FastAPI app
 +-- client/        # React app
-+-- src/           # preprocessing/report shared logic
-+-- scripts/       # train/report/smoke scripts
++-- backend/src/           # preprocessing/report shared logic
++-- backend/scripts/       # train/report/smoke scripts
 +-- data/dummy/    # dummy datasets
 +-- models/        # trained model artifacts
 +-- reports/       # metrics and generated reports
@@ -197,3 +197,4 @@ edutech-risk-prediction/
 ## 12. 다음 단계
 
 - 서비스 배포 준비.
+
