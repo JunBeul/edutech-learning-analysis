@@ -1,11 +1,12 @@
 @use './breakpoints' as *;
+@use 'sass:color';
 
 .modal_wapper {
 	z-index: 10;
 
 	position: fixed;
 	inset: 0;
-	background: rgba(0, 0, 0, 0.2);
+	background: color.change($color_black, $alpha: 0.2);
 	backdrop-filter: blur(6px);
 	-webkit-backdrop-filter: blur(6px);
 	display: grid;
@@ -14,7 +15,7 @@
 	.modal_container {
 		z-index: 20;
 
-		background: #ffffff;
+		background: $color_white;
 		border-radius: 12px;
 		padding: 20px;
 		width: min(560px, 92vw);
@@ -40,7 +41,7 @@
 
 			.modal_file_input {
 				padding: 12px;
-				border: 2px dashed rgba(0, 0, 0, 0.1);
+				border: 2px dashed color.change($color_black, $alpha: 0.2);
 				border-radius: 8px;
 				text-align: center;
 				cursor: pointer;
@@ -73,7 +74,7 @@
 					padding: 3px;
 					margin-top: 4px;
 					border: none;
-					border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+					border-bottom: 2px solid color.change($color_black, $alpha: 0.1);
 					&:focus {
 						outline: none;
 						border-color: $color_green;
@@ -87,8 +88,8 @@
 			}
 		}
 		.modal_errors {
-			background: lighten($color_red, 35%);
-			color: darken($color_red, 15%);
+			background: color.adjust($color_red, $lightness: 35%);
+			color: color.adjust($color_red, $lightness: -15%);
 			border-radius: 8px;
 			padding: 12px;
 
@@ -110,12 +111,12 @@
 				border: none;
 				border-radius: 8px;
 				font-weight: bold;
-				color: #fff;
+				color: $color_white;
 				cursor: pointer;
 				background-color: $color_green;
 
 				&:disabled {
-					background-color: lighten($color_gray, 30%);
+					background-color: color.adjust($color_gray, $lightness: 20%);
 					cursor: not-allowed;
 				}
 			}

@@ -33,16 +33,15 @@ body {
 	}
 
 	button {
-		width: 80px;
+		width: 85px;
 		aspect-ratio: 1 / 1;
 		padding: 8px;
-		font-size: 1rem;
-		border: none;
 		border-radius: 8px;
 		color: color.adjust($color_gray, $lightness: -25%);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		flex-direction: column;
 		gap: 4px;
 		font-size: 14px;
@@ -52,6 +51,10 @@ body {
 		svg {
 			width: 40px;
 			height: 40px;
+		}
+
+		.btn_text {
+			font-size: 12px;
 		}
 
 		&:hover {
@@ -71,7 +74,6 @@ body {
 			width: 40px;
 			aspect-ratio: 1 / 1;
 			padding: 4px;
-			font-size: 0;
 			justify-content: center;
 			align-items: center;
 			background-color: $color_white;
@@ -81,6 +83,10 @@ body {
 				height: 20px;
 			}
 
+			.btn_text {
+				font-size: 0px;
+				display: none;
+			}
 			&:hover {
 				background-color: color.adjust($color_white, $lightness: -5%);
 			}
