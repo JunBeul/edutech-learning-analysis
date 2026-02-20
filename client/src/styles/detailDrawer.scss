@@ -1,4 +1,5 @@
 @use './breakpoints' as *;
+@use 'sass:color';
 
 .drawer_container {
 	z-index: 20;
@@ -9,7 +10,7 @@
 	height: 97%;
 	width: 45%;
 	min-width: 600px;
-	background: white;
+	background: $color_white;
 	box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
 	overflow-y: auto;
 	border-radius: 12px 0 0 12px;
@@ -18,16 +19,14 @@
 		z-index: 30;
 
 		width: 100%;
-		box-sizing: border-box;
 		position: sticky;
 		top: 0;
-		background: white;
+		background: $color_white;
 		padding: 16px;
 	}
 
 	.drawer_body {
 		padding: 16px;
-		box-sizing: border-box;
 
 		.drawer_row {
 			display: flex;
@@ -36,13 +35,13 @@
 			.key {
 				font-weight: bolder;
 				text-align: right;
-				color: #555;
+				color: $color_black;
 				min-width: 130px;
 				flex-shrink: 0;
 			}
 			.value {
 				flex-grow: 1;
-				color: #333;
+				color: color.adjust($color_black, $lightness: -20%);
 			}
 		}
 
