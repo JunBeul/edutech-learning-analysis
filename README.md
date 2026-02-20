@@ -1,291 +1,199 @@
-# edutech-risk-prediction
+# EduTech Risk Prediction
 
-정보·컴퓨터 교과에서 **최소성취수준 보장지도(최성보) 위험군 학생을 학기 중간 시점에 조기 예측**하기 위한  
-EduTech 데이터 분석 및 AI 예측 프로젝트입니다.
+학기 중간 시점의 학습/행동 데이터를 기반으로 최소 성취수준 미도달 위험 학생을 조기 식별하는 End-to-End 프로젝트입니다.
 
-본 프로젝트는 교사가 예방지도를 위한 예비군을 선별해야 하는 현장 업무 부담을  
-데이터 기반으로 경감하는 것을 목표로 합니다.
+이 저장소에는 다음이 포함됩니다.
 
----
+- 데이터 전처리 파이프라인
+- 위험 예측 모델 학습
+- FastAPI 기반 추론/리포트 API
+- 탐색 및 다운로드를 위한 React 대시보드
 
-## 1. 프로젝트 배경
+## 1. 문제 정의
 
-2022 개정 교육과정에서는 최소성취수준 보장지도가 도입되었습니다. 다음 조건에 해당하는 학생은 보충지도를 의무적으로 실시해야 합니다.
+많은 교실에서 고위험 학생은 학기 말에 가까워져서야 식별됩니다.  
+이 프로젝트는 더 이른 시점에 위험을 예측하고, 실제 개입 가능한 가이드를 제공합니다.
 
-- 성취율 40% 미만
-- 결석률 1/3 이상(출석률 2/3 미도달)
+## 2. 프로젝트가 제공하는 것
 
-문제는 학기 종료 후 성취율이 확정되기 때문에 학기 중간 시점에는 위험군 선별 기준이 부재하다는 점입니다.
+- CSV 업로드 기반 위험 예측 (`POST /predict`)
+- 학교/학급별 평가 정책 동적 설정
+  - 성취 기준 임계치
+  - 평가 항목 만점 및 반영 비율
+  - 총 수업 시수
+- 교사 개입을 위한 리포트 확장 컬럼
+  - `risk_proba`, `risk_level`, `top_reasons`, `score_guidance`, `action`
+  - `absence_limit`, `remaining_absence_allowance`
+  - `participation_risk_score`, `participation_flag`
+- 대시보드 UX
+  - 컬럼 필터/정렬/숨김
+  - 스티키 테이블 헤더
+  - 행 상세 드로어
+  - 모바일 플로팅 내비게이션
+- CSV 리포트 저장 및 다운로드 엔드포인트 제공 (`GET /download/{filename}`)
 
-특히 정보·컴퓨터 교과는
+## 3. 기술 스택
 
-- 모의고사 없음
-- 수행평가 비중 높음
-- 과정 중심 평가 구조
+- Backend: `FastAPI`, `pandas`, `scikit-learn`, `joblib`, `uvicorn`
+- Frontend: `React 19`, `TypeScript`, `Vite`, `SCSS`
+- Model: `LogisticRegression` + `SimpleImputer`
+- 개발 실행: 루트 `npm run dev` (`concurrently`)
 
-로 인해 사전 선별이 더욱 어렵습니다.
+## 4. 데이터와 전처리
 
----
+핵심 스키마 컬럼:
 
-## 2. 프로젝트 목표
+- `student_id`
+- `midterm_score`, `final_score`, `performance_score`
+- `assignment_count`, `participation_level`, `question_count`
+- `night_study`, `absence_count`, `behavior_score`
 
-학기 중간 시점의 학습·행동 데이터를 기반으로 **최소성취수준 미도달 위험군(at_risk)을 조기 예측**합니다.
+전처리(`src/preprocessing.py`) 수행 항목:
 
-- (분석) 위험군 분포 및 영향 요인 탐색
-- (모델) 위험군 분류 모델 구축 및 평가
-- (적용) 현장 개입(예방지도) 우선순위 도출을 위한 근거 제공
+- 스키마 검증
+- 기본 정제 및 수치형 변환
+- 결측 플래그 생성 (`*_missing`)
+- 결측치 대체 (median/mean + all-NaN fallback)
+- 참여도 인코딩 (`participation_level_num`)
+- 타깃 라벨 생성 옵션 (`at_risk`)
 
----
+기본 더미 데이터셋:
 
-## 3. 데이터 스키마 (Single Schema)
+- `data/dummy/dummy_full_labeled.csv` (300행, `at_risk` 비율: 0.60)
+- `data/dummy/dummy_midterm_like_labeled.csv` (300행, `at_risk` 비율: 0.60)
 
-> 학기 중간 스냅샷에서 `final_score`, `performance_score`는 결측(NaN)일 수 있습니다.  
-> 본 저장소에는 개인정보 보호를 위해 더미 데이터만 포함됩니다.
+## 5. 모델 및 성능
 
-| Column              | Description                              |
-| ------------------- | ---------------------------------------- |
-| student_id          | 비식별 학생 ID                           |
-| midterm_score       | 중간고사 성적 (결측 허용)                |
-| final_score         | 기말고사 성적 (결측 허용)                |
-| performance_score   | 수행평가 성적 (결측 허용)                |
-| assignment_count    | 과제 제출 횟수                           |
-| participation_level | 수업 참여도 (상/중/하)                   |
-| question_count      | 질문 횟수                                |
-| night_study         | 야간자율학습 참여 여부 (0/1)             |
-| absence_count       | 결석 횟수                                |
-| behavior_score      | 상벌점                                   |
-| at_risk             | 최성보 위험군 라벨 (조기 예측 대상, 0/1) |
+학습 스크립트: `scripts/train_model.py`
 
-### 파생 컬럼(모델 입력 안정화용)
+- 모델: Logistic Regression (`class_weight='balanced'`)
+- 입력 피처: `src/config.py`의 `FEATURE_COLS`
+- 결측 처리: `SimpleImputer(strategy='constant', fill_value=0)`
 
-결측 여부가 0점과 혼동되지 않도록 **missing flag**를 추가합니다.
+5-Fold CV 평균 성능 (`reports/tables/cv_metrics_logistic.csv`):
 
-- `midterm_score_missing`
-- `final_score_missing`
-- `performance_score_missing`
-- `participation_level_num` (상/중/하 인코딩)
+- Accuracy: `0.9900`
+- Precision: `0.9963`
+- Recall: `0.9925`
+- F1: `0.9943`
 
----
+참고:
 
-## 4. 더미 데이터 구성
+- `reports/tables/model_metrics_logistic.csv`의 단일 학습 지표는 완벽에 가깝기 때문에, 일반화 성능 평가는 CV/외부 검증을 우선해야 합니다.
+- 현재 저장소 데이터는 더미(시뮬레이션) 데이터입니다.
 
-경로:
+### 5.1 모델 선정 이유
 
-```text
-data/dummy/
+본 프로젝트에서는 위험군 예측 모델로 Logistic Regression을 우선 적용했습니다.
+
+선정 이유는 다음과 같습니다.
+
+#### 1) 해석 가능성 (Interpretability)
+
+위험군 예측의 목적은 단순 분류를 넘어, 어떤 요인이 학생을 위험군으로 만드는지 설명하는 데 있습니다.
+Logistic Regression은 변수별 계수를 통해 위험 증가/감소 요인을 명확히 해석할 수 있어 교육 현장 개입 전략 수립에 직접 활용 가능합니다.
+
+#### 2) 데이터 규모 적합성
+
+본 프로젝트 데이터는 변수 수가 제한적이고 표본 수가 크지 않은 정형(tabular) 데이터 구조를 가집니다.
+이 경우 복잡한 비선형 모델보다 선형 모델이 과적합 위험이 낮고 안정적인 일반화 성능을 보입니다.
+
+#### 3) 확률 기반 의사결정 지원
+
+Logistic Regression은 위험군 분류 결과를 단순 0/1이 아닌 확률값으로 제공합니다.
+이를 통해 예방지도 대상 선별 임계값을 학교 상황에 맞게 유연하게 조정할 수 있습니다.
+
+#### 4) 기준선 (Baseline Model) 역할
+
+프로젝트 초기 단계에서는 설명력과 재현성이 높은 기준 모델이 필요합니다.
+향후 RandomForest, Gradient Boosting 등 고급 모델 확장 시 성능 비교 기준으로 활용 가능합니다.
+
+## 6. 시스템 흐름
+
+1. 사용자가 웹 UI에서 CSV 업로드 및 정책 입력
+2. API가 전처리 후 `risk_proba` 추론
+3. API가 사유/가이드/액션 컬럼까지 확장
+4. 대시보드에서 테이블 탐색 및 상세 확인
+5. 생성된 리포트 CSV 다운로드
+
+## 7. API 요약
+
+- `GET /` - API 루트
+- `GET /health` - 헬스 체크
+- `POST /predict` - multipart 업로드 (`file`, `policy`) + query `mode=full|compact`
+- `GET /download/{filename}` - 저장된 리포트 CSV 다운로드
+
+## 8. 로컬 실행
+
+### 8.1 사전 요구사항
+
+- Python 3.11+
+- Node.js 20+
+
+### 8.2 의존성 설치
+
+```bash
+pip install -r requirements.txt
+npm install
+npm --prefix client install
 ```
 
-생성 파일:
+### 8.3 프론트 환경변수 설정
 
-- dummy_full.csv → 학기 말 가정 데이터
-- dummy_midterm_like.csv → 학기 중간 가정 데이터
-- dummy_full_labeled.csv
-- dummy_midterm_like_labeled.csv
-- data_dictionary.csv
+`client/.env` 파일 생성:
 
-더미 데이터는 다음 목적을 위해 사용합니다.
-
-- 노트북/파이프라인 재현성 확보
-- 결측(final_score, performance_score) 등 스냅샷 상황 검증
-- 모델 학습/평가 흐름 검증
-
----
-
-## 5. 전처리 파이프라인
-
-경로:
-
-```text
-src/preprocessing.py
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-주요 기능:
+### 8.4 개발 서버 실행
 
-- 단일 스키마 검증 (필수 컬럼 확인)
-- 기본 정제: 중복 제거, numeric coercion
-- 결측 플래그 생성(missing flag)
-- 결측치 처리: median/mean + all-NaN 컬럼 fallback(스냅샷 방어)
-- 참여도 인코딩(participation_level_num)
-- 성취율(achievement) 계산 시 결측 컬럼은 제외하여 평균(가용 항목 기준)
-
-추가 품질 게이트(스모크 테스트):
-
-```text
-scripts/smoke_test_preprocessing.py
+```bash
+npm run dev
 ```
 
----
+- Frontend: `http://localhost:5173`
+- Backend: `http://127.0.0.1:8000`
 
-## 6. 탐색적 데이터 분석 (EDA)
+## 9. 배치 실행
 
-노트북:
-
-```text
-notebook/01_eda.ipynb
-```
-
-분석 내용:
-
-1. 데이터 품질 점검
-2. 결측 데이터 영향 분석
-3. 위험군 분포 분석
-4. 변수별 위험군 차이 분석
-5. 조기 탐지 후보 변수 도출
-
----
-
-## 7. 위험군 예측 모델 (Project 1)
-
-노트북:
-
-```text
-notebook/02_risk_prediction.ipynb
-```
-
-### 7.1 모델 설정
-
-- 알고리즘: Logistic Regression
-- 결측 처리: SimpleImputer(Constant=0)
-- 클래스 불균형 대응: class_weight="balanced"
-- 평가 방식: Stratified 5-Fold Cross Validation
-- 핵심 지표: Recall(위험군 놓침 최소화)
-
-### 7.2 교차검증 성능 요약
-
-> 아래 수치는 더미 데이터 기반 실험 결과이며, 실제 데이터 적용 시 재검증이 필요합니다.
-
-| Metric    | Score  |
-| --------- | ------ |
-| Accuracy  | 0.9900 |
-| Precision | 0.9963 |
-| Recall    | 0.9925 |
-| F1-Score  | 0.9943 |
-
-| Metric    | Score  |
-| --------- | ------ |
-| Accuracy  | 0.0091 |
-| Precision | 0.0083 |
-| Recall    | 0.0103 |
-| F1-Score  | 0.0052 |
-
-### 7.3 모델 선정 이유
-
-본 프로젝트에서는 위험군 예측 모델로 Logistic Regression을 우선 적용하였다.
-
-- 해석 가능성: 계수 기반으로 위험 증가/감소 요인 설명 가능
-- 데이터 규모 적합성: 소규모 정형 데이터에서 과적합 위험이 낮음
-- 확률 기반 의사결정: 임계값을 학교 상황에 맞게 조정 가능
-- 기준선(Baseline) 역할: 향후 고급 모델과 비교 기준 제공
-
-> Feature importance(계수 기반 정리)는 추후 단계에서 별도 리포트로 확장 예정입니다.
-
----
-
-## 8. 주요 발견점(더미 데이터 기준)
-
-위험군 학생은 다음 특성을 보였습니다.
-
-- 결석 횟수 높음
-- 과제 제출 횟수 낮음
-- 수행평가 점수 낮음(결측 제외)
-- 참여도 낮음
-
-→ 학기 중간 시점에서도 위험군 조기 탐지 가능
-
----
-
-## 9. 산출물 (Outputs)
-
-### Tables
-
-    reports/tables/
-
-- 예측 리포트: prediction_report_YYYYMMDD.csv (날짜 접미사)
-
----
-
-## 10. 향후 계획 (Next)
-
-- 실제 학교 현장 데이터(비식별)로 성능 재검증 및 임계값(Threshold) 최적화
-- CSV 업로드 기반 예측 리포트 자동 생성(대시보드/서빙 단계)
-- (Project 2) 보고서형 수행평가 자동 채점 프로젝트로 확장
-
----
-
-## 11. 개인정보 처리
-
-- 실제 학생 데이터 비공개
-- 저장소에는 더미 데이터만 포함
-- 분석 결과는 집계·익명화하여 보고
-
----
-
-## Quickstart — Risk Prediction Report
-
-예측 리포트는 아래 2단계로 생성할 수 있습니다.
-
-### 1) 모델 학습 및 저장
+모델 학습:
 
 ```bash
 python scripts/train_model.py
 ```
 
-저장 경로:
-
-```text
-models/logistic_model.joblib
-```
-
-### 2) 예측 리포트 생성
+리포트 생성:
 
 ```bash
 python scripts/generate_prediction_report.py
 ```
 
-출력 파일:
+출력:
+
+- 모델: `models/logistic_model.joblib`
+- 리포트: `reports/tables/prediction_report_YYYYMMDD*.csv`
+
+## 10. 프로젝트 구조
 
 ```text
-reports/tables/prediction_report_YYYYMMDD.csv
+edutech-risk-prediction/
++-- api/           # FastAPI app
++-- client/        # React app
++-- src/           # preprocessing/report shared logic
++-- scripts/       # train/report/smoke scripts
++-- data/dummy/    # dummy datasets
++-- models/        # trained model artifacts
++-- reports/       # metrics and generated reports
+`-- notebook/      # EDA and experiments
 ```
 
-### 3) 교사 입력값(임시)
+## 11. 포트폴리오 포인트
 
-현재는 `src/config.py`의 `EVALUATION_POLICY`에 임시값으로 정의되어 있으며,<br>
-웹 UI 구축 시 CSV 업로드와 함께 입력받는 형태로 전환할 예정입니다.
+- 노트북 실험에 그치지 않고, 전처리 -> API 추론 -> 리포트 생성 -> 대시보드까지 전체 워크플로우를 구현했습니다.
+- 단순 예측 점수 외에 교사 의사결정을 돕는 확장 필드를 제공했습니다.
+- `preprocessing`, `report_logic`, API, 프론트엔드로 모듈을 분리해 재사용 가능한 구조로 설계했습니다.
 
-- (성취율 기준) 40%
-- 중간/기말/수행 만점 및 반영비율(합 100%)
-- 총 수업일수
+## 12. 다음 단계
 
-예측 리포트 주요 컬럼:
-
-| Column                      | Description                                                     |
-| --------------------------- | --------------------------------------------------------------- |
-| student_id                  | 학생 ID                                                         |
-| risk_proba                  | 위험군 확률                                                     |
-| risk_level                  | High / Medium / Low                                             |
-| top_reasons                 | 위험 사유(최대 3개, 결측 점수는 제외)                           |
-| score_guidance              | 결측 점수(기말/수행) 기준 성취율 40% 충족을 위한 필요 점수 안내 |
-| absence_limit               | 총수업일 기준 결석 한도(floor(total/3))                         |
-| remaining_absence_allowance | 결석 한도까지 남은 결석 여유(횟수)                              |
-| participation_risk_score    | 참여도 종합 점수(하위 15%+참여도)                               |
-| participation_flag          | 참여도 저하 여부(0/1)                                           |
-| action                      | 권장 개입 전략                                                  |
-
----
-
-본 리포트는 학기 중간 시점 데이터만으로<br>
-최성보 위험군 예비군을 조기 선별하기 위한 목적으로 생성됩니다.<br>
-생성된 리포트는 교사의 판단을 보조하는 참고 자료로 활용하시기 바랍니다.
-
----
-
-## Legacy Scripts
-
-- `_legacy_00_generate_dummy_dataset.ipynb`
-  과거 더미 데이터 생성 노트북입니다.
-  최신 더미 데이터는 `00_generate_dummy_dataset.py`를 사용합니다.
-
-- `scripts/_legacy_generate_prediction_report.py`  
-  과거 버전(참고용)입니다. 현재는 공통 로직(`src/report_logic.py`) 기반으로 리포트 생성이 이루어지며,
-  최신 스크립트는 `scripts/generate_prediction_report.py`를 사용합니다.
+- 서비스 배포 준비.
