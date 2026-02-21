@@ -1,137 +1,244 @@
-﻿# EduTech Risk Prediction
+# 최성보 신호등 (MAPLIGHT) : EduTech Risk Prediction
 
-학기 중간 시점의 학습/행동 데이터를 기반으로 최소 성취수준 미도달 위험 학생을 조기 식별하는 End-to-End 프로젝트입니다.
+학기 중간 시점의 학습/행동 데이터를 기반으로,  
+최소성취수준 보장지도 대상(위험군)을 조기에 식별하고 교사 개입까지 제공하는 End-to-End AI 서비스입니다.
 
-이 저장소에는 다음이 포함됩니다.
+본 프로젝트는 교사가 예방지도를 위한 예비군을 선별해야 하는 현장 업무 부담을
+데이터 기반으로 경감하는 것을 목표로 합니다.
 
-- 데이터 전처리 파이프라인
-- 위험 예측 모델 학습
-- FastAPI 기반 추론/리포트 API
-- 탐색 및 다운로드를 위한 React 대시보드
+- 배포 서비스: https://maplight.onrender.com
 
-## 1. 문제 정의
+---
 
-많은 교실에서 고위험 학생은 학기 말에 가까워져서야 식별됩니다.  
-이 프로젝트는 더 이른 시점에 위험을 예측하고, 실제 개입 가능한 가이드를 제공합니다.
+- 개발/운영 관점 상세는 `README_DEV.md`를 참고해주세요.
 
-## 2. 프로젝트가 제공하는 것
+---
+
+## 1. 왜 이 프로젝트를 만들었는가
+
+2022 개정 교육과정에서는 최소성취수준 보장지도가 도입되었습니다. 다음 조건에 해당하는 학생은 보충지도를 의무적으로 실시해야 합니다.
+
+- 성취율 40% 미만
+- 결석률 1/3 이상(출석률 2/3 미도달)
+
+문제는 학기 종료 후 성취율이 확정되기 때문에 학기 중간 시점에는 위험군 선별 기준이 부재하다는 점입니다.
+
+해당 프로젝트는 다음과 같은 의문을 해결하기 위해 시작합니다.
+
+- 학기 중간 데이터만으로 위험군을 조기에 찾을 수 있는가?
+- 예측 결과를 점수만이 아니라 교사 행동으
+
+---
+
+## 2. 프로젝트 진행
+
+- 데이터 설계 및 더미 데이터 생성
+- EDA/전처리 설계
+- 모델 학습 및 성능 검증
+- 리포트 자동화 로직 설계
+- FastAPI 백엔드 구현
+- React 프론트엔드 구현
+- Docker/Render 배포
+- 이슈 분석/회고 문서화(`docs/`)
+
+---
+
+## 3. 핵심 기능
 
 - CSV 업로드 기반 위험 예측 (`POST /api/predict`)
-- 학교/학급별 평가 정책 동적 설정
-  - 성취 기준 임계치
-  - 평가 항목 만점 및 반영 비율
-  - 총 수업 시수
-- 교사 개입을 위한 리포트 확장 컬럼
-  - `risk_proba`, `risk_level`, `top_reasons`, `score_guidance`, `action`
-  - `absence_limit`, `remaining_absence_allowance`
-  - `participation_risk_score`, `participation_flag`
-- 대시보드 UX
-  - 컬럼 필터/정렬/숨김
-  - 스티키 테이블 헤더
-  - 행 상세 드로어
-  - 모바일 플로팅 내비게이션
-- CSV 리포트 저장 및 다운로드 엔드포인트 제공 (`GET /api/download/{filename}`)
+- 학교/학급별 평가 정책 입력
+- 위험 확률(`risk_proba`) + 위험 등급(`risk_level`) 제공
+- 교사 개입 근거 컬럼 자동 생성
+  - `top_reasons`
+  - `score_guidance`
+  - `action`
+  - `remaining_absence_allowance`
+- 대시보드 탐색 기능
+  - 컬럼 정렬/필터/숨김
+  - 스티키 헤더
+  - 학생 상세 드로어
+  - 모바일 플로팅 네비게이션
+- 결과 CSV 다운로드 (`GET /api/download/{filename}`)
 
-## 3. 기술 스택
+---
 
-- Backend: `FastAPI`, `pandas`, `scikit-learn`, `joblib`, `uvicorn`
-- Frontend: `React 19`, `TypeScript`, `Vite`, `SCSS`
-- Model: `LogisticRegression` + `SimpleImputer`
-- 개발 실행: 루트 `npm run dev` (`concurrently`)
+## 4. 기술 스택
 
-## 4. 데이터와 전처리
+### Backend / ML
 
-핵심 스키마 컬럼:
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
 
-- `student_id`
-- `midterm_score`, `final_score`, `performance_score`
-- `assignment_count`, `participation_level`, `question_count`
-- `night_study`, `absence_count`, `behavior_score`
+### Frontend
 
-전처리(`backend/src/preprocessing.py`) 수행 항목:
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Sass](https://img.shields.io/badge/SCSS-CC6699?style=for-the-badge&logo=sass&logoColor=white)
 
-- 스키마 검증
-- 기본 정제 및 수치형 변환
-- 결측 플래그 생성 (`*_missing`)
-- 결측치 대체 (median/mean + all-NaN fallback)
-- 참여도 인코딩 (`participation_level_num`)
-- 타깃 라벨 생성 옵션 (`at_risk`)
+### Infra / Deploy
 
-기본 더미 데이터셋:
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=000000)
+![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)
 
-- `data/dummy/dummy_full_labeled.csv` (300행, `at_risk` 비율: 0.60)
-- `data/dummy/dummy_midterm_like_labeled.csv` (300행, `at_risk` 비율: 0.60)
+---
 
-## 5. 모델 및 성능
+## 5. 프로젝트 진행 흐름
 
-학습 스크립트: `backend/scripts/train_model.py`
+1. EDA 및 전처리 방향 수립 (Notebook)
+2. 모델 학습/검증 실험 (Notebook)
+3. 실험 코드를 파이썬 모듈/스크립트로 전환
+4. 개입전략 및 리포트 자동화 로직 추가
+5. FastAPI 백엔드 구현
+6. React 프론트엔드 구현
+7. Docker/Render 배포
 
-- 모델: Logistic Regression (`class_weight='balanced'`)
-- 입력 피처: `backend/src/config.py`의 `FEATURE_COLS`
-- 결측 처리: `SimpleImputer(strategy='constant', fill_value=0)`
+> [이미지 추가 예정] 전체 프로젝트 타임라인/플로우 다이어그램
 
-5-Fold CV 평균 성능 (`reports/tables/cv_metrics_logistic.csv`):
+### 1단계: EDA와 전처리
 
-- Accuracy: `0.9900`
-- Precision: `0.9963`
-- Recall: `0.9925`
-- F1: `0.9943`
+초기에는 `notebook/01_eda.ipynb`, `notebook/02_risk_prediction.ipynb`에서  
+중간 시점 데이터의 분포와 위험군 패턴을 확인했습니다.
 
-참고:
+핵심 확인 포인트:
 
-- `reports/tables/model_metrics_logistic.csv`의 단일 학습 지표는 완벽에 가깝기 때문에, 일반화 성능 평가는 CV/외부 검증을 우선해야 합니다.
-- 현재 저장소 데이터는 더미(시뮬레이션) 데이터입니다.
+- 결석 증가와 위험군 비율 관계
+- 수행/중간 점수와 위험군 관계
+- 과제/참여도와 위험군 관계
+- 중간 시점 특성상 `final_score` 결측(all-NaN) 처리 필요성
 
-### 5.1 모델 선정 이유
+이미지(현재 저장소 기준):
 
-본 프로젝트에서는 위험군 예측 모델로 Logistic Regression을 우선 적용했습니다.
+![EDA: 결석과 위험군](reports/figures/eda_absence_vs_risk.png)
+![EDA: 수행평가와 위험군](reports/figures/eda_performance_vs_risk.png)
+![EDA: 과제 제출과 위험군](reports/figures/eda_assignment_vs_risk.png)
+![EDA: 참여도와 위험군](reports/figures/eda_participation_vs_risk.png)
 
-선정 이유는 다음과 같습니다.
+> [이미지 추가 예정] EDA 인사이트 요약 슬라이드형 이미지
 
-#### 1) 해석 가능성 (Interpretability)
+전처리 구현 결과:
 
-위험군 예측의 목적은 단순 분류를 넘어, 어떤 요인이 학생을 위험군으로 만드는지 설명하는 데 있습니다.
-Logistic Regression은 변수별 계수를 통해 위험 증가/감소 요인을 명확히 해석할 수 있어 교육 현장 개입 전략 수립에 직접 활용 가능합니다.
+- `backend/src/preprocessing.py`로 파이프라인 모듈화
+- 결측 플래그(`*_missing`)를 피처로 보존
+- all-NaN 컬럼 fallback 처리
+- 참여도 인코딩(`participation_level_num`)
+- 라벨 생성 규칙(`at_risk`) 정리
 
-#### 2) 데이터 규모 적합성
+### 2단계: 모델 실험과 선택
 
-본 프로젝트 데이터는 변수 수가 제한적이고 표본 수가 크지 않은 정형(tabular) 데이터 구조를 가집니다.
-이 경우 복잡한 비선형 모델보다 선형 모델이 과적합 위험이 낮고 안정적인 일반화 성능을 보입니다.
+EDA 이후 위험군 분류 baseline으로 Logistic Regression을 먼저 확정했습니다.
 
-#### 3) 확률 기반 의사결정 지원
+#### 왜 Logistic Regression을 선택했는가
 
-Logistic Regression은 위험군 분류 결과를 단순 0/1이 아닌 확률값으로 제공합니다.
-이를 통해 예방지도 대상 선별 임계값을 학교 상황에 맞게 유연하게 조정할 수 있습니다.
+1. 해석 가능성
 
-#### 4) 기준선 (Baseline Model) 역할
+- 교육 현장에서는 "왜 위험한가"가 중요하므로 계수 기반 설명이 가능한 모델이 필요했습니다.
 
-프로젝트 초기 단계에서는 설명력과 재현성이 높은 기준 모델이 필요합니다.
-향후 RandomForest, Gradient Boosting 등 고급 모델 확장 시 성능 비교 기준으로 활용 가능합니다.
+2. 데이터 구조 적합성
 
-## 6. 시스템 흐름
+- 현재 데이터는 정형(tabular) + 제한된 피처 구조이므로, 초기 baseline으로 선형 모델이 적합했습니다.
 
-1. 사용자가 웹 UI에서 CSV 업로드 및 정책 입력
-2. API가 전처리 후 `risk_proba` 추론
-3. API가 사유/가이드/액션 컬럼까지 확장
-4. 대시보드에서 테이블 탐색 및 상세 확인
-5. 생성된 리포트 CSV 다운로드
+3. 확률 기반 의사결정
 
-## 7. API 요약
+- `predict_proba`를 활용해 학교별 정책에 따라 컷오프를 조정할 수 있습니다.
 
-- `GET /` - 프론트엔드 정적 앱 엔트리(빌드 미존재 시 API 메시지 반환)
-- `GET /api/health` - 헬스 체크
-- `POST /api/predict` - multipart 업로드 (`file`, `policy`) + query `mode=full|compact`
-- `GET /api/download/{filename}` - 저장된 리포트 CSV 다운로드
-- `GET /api/sample/dummy-midterm-like-labeled` - 예시 더미 CSV 다운로드
+계수 산출물(`reports/tables/feature_importance_logistic.csv`) 예시:
 
-## 8. 로컬 실행
+- `absence_count`: +0.293
+- `midterm_score`: -1.278
+- `performance_score`: -1.289
 
-### 8.1 사전 요구사항
+### 3단계: 성능 평가 기준 설계
+
+모델을 선택한 뒤, 지표를 "정확도 단일 기준"이 아니라 현장 개입 목적 기준으로 정했습니다.
+
+#### 왜 이 기준으로 성능 평가를 했는가
+
+- Recall: 위험군 누락 최소화(개입 대상 놓치지 않기)
+- Precision: 과개입/자원 낭비 방지
+- F1: Recall-Precision 균형 확인
+- Accuracy: 보조 지표
+
+또한 단일 split 과대평가를 피하기 위해 5-Fold CV 결과를 함께 사용했습니다.
+
+### 4단계: 파이썬 모듈화 + 개입전략/리포트 자동화
+
+노트북 실험에서 끝내지 않고 서비스 운영 가능한 형태로 코드화했습니다.
+
+- 모델 학습 스크립트: `backend/scripts/train_model.py`
+- 배치 리포트 생성: `backend/scripts/generate_prediction_report.py`
+- 리포트 로직 모듈: `backend/src/report_logic.py`
+
+자동 생성 컬럼:
+
+- `risk_proba`, `risk_level`
+- `top_reasons`
+- `score_guidance`
+- `action`
+- `absence_limit`, `remaining_absence_allowance`
+
+즉, "위험 점수 출력"에서 끝나지 않고 "개입 가능한 문장/가이드 생성"까지 확장했습니다.
+
+### 5~7단계: 백엔드, 프론트, 배포
+
+#### 백엔드 (FastAPI)
+
+- `backend/api/main.py`
+- 업로드/예측/다운로드/샘플 API 구성
+- 정책 입력(JSON) 기반 동적 계산
+
+#### 프론트엔드 (React)
+
+- `client/src/pages/LandingPage.tsx`
+- `client/src/pages/DashboardPage.tsx`
+- 업로드 -> 결과 확인 -> 상세 탐색 -> CSV 다운로드 UX
+
+#### 배포
+
+- Docker 멀티스테이지 빌드
+- Render 단일 서비스 배포
+- 서비스 URL: https://maplight.onrender.com
+
+> [이미지 추가 예정] 서비스 랜딩 페이지 캡처
+> [이미지 추가 예정] 대시보드(테이블/필터/상세 드로어) 캡처
+
+---
+
+## 6. 성능 요약
+
+5-Fold CV 평균(`reports/tables/cv_metrics_logistic.csv`)
+
+- Accuracy: **0.9900**
+- Precision: **0.9963**
+- Recall: **0.9925**
+- F1: **0.9943**
+
+추가 이미지:
+
+![혼동행렬](reports/figures/cm_logistic_regression.png)
+![성취율 분포](reports/figures/achievement_rate_distribution.png)
+![데이터셋 위험군 비율 비교](reports/figures/risk_rate_comparison.png)
+
+해석 주의:
+
+- 저장소 데이터는 더미(시뮬레이션) 데이터입니다.
+- 단일 학습 지표(1.0)는 과대평가 가능성이 있으므로 CV/외부 검증 중심으로 해석합니다.
+- 본 프로젝트의 핵심 성과는 "운영 가능한 파이프라인 + 개입 가능한 리포트" 구축입니다.
+
+---
+
+## 7. 빠른 실행
+
+### 요구사항
 
 - Python 3.11+
 - Node.js 20+
 
-### 8.2 의존성 설치
+### 설치
 
 ```bash
 pip install -r requirements.txt
@@ -139,15 +246,15 @@ npm install
 npm --prefix client install
 ```
 
-### 8.3 프론트 환경변수 설정
+### 프론트 환경변수
 
-`client/.env` 파일 생성:
+`client/.env`
 
 ```env
 VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-### 8.4 개발 서버 실행
+### 실행
 
 ```bash
 npm run dev
@@ -156,46 +263,30 @@ npm run dev
 - Frontend: `http://localhost:5173`
 - Backend: `http://127.0.0.1:8000`
 
-## 9. 배치 실행
+---
 
-모델 학습:
-
-```bash
-python backend/scripts/train_model.py
-```
-
-리포트 생성:
-
-```bash
-python backend/scripts/generate_prediction_report.py
-```
-
-출력:
-
-- 모델: `models/logistic_model.joblib`
-- 리포트: `reports/tables/prediction_report_YYYYMMDD*.csv`
-
-## 10. 프로젝트 구조
+## 8. 프로젝트 구조
 
 ```text
 edutech-risk-prediction/
-+-- backend/api/           # FastAPI app
-+-- client/        # React app
-+-- backend/src/           # preprocessing/report shared logic
-+-- backend/scripts/       # train/report/smoke scripts
-+-- data/dummy/    # dummy datasets
-+-- models/        # trained model artifacts
-+-- reports/       # metrics and generated reports
-`-- notebook/      # EDA and experiments
+├─ backend/
+│  ├─ api/                  # FastAPI 엔드포인트
+│  ├─ src/                  # 전처리/리포트 공통 로직
+│  └─ scripts/              # 학습/리포트/스모크 테스트
+├─ client/                  # React 대시보드
+├─ data/dummy/              # 더미 데이터
+├─ models/                  # 모델 산출물
+├─ reports/                 # 지표/이미지/리포트
+└─ docs/                    # 이슈/회고/학습 문서
 ```
 
-## 11. 포트폴리오 포인트
+---
 
-- 노트북 실험에 그치지 않고, 전처리 -> API 추론 -> 리포트 생성 -> 대시보드까지 전체 워크플로우를 구현했습니다.
-- 단순 예측 점수 외에 교사 의사결정을 돕는 확장 필드를 제공했습니다.
-- `preprocessing`, `report_logic`, API, 프론트엔드로 모듈을 분리해 재사용 가능한 구조로 설계했습니다.
+## 9. 프로젝트 포인트
 
-## 12. 다음 단계
+- 실험 노트북 -> 서비스 코드로 전환한 제품화 경험
+- 모델 선택/평가 기준을 교육 개입 목적과 연결해 설명 가능
+- 예측 결과를 교사 행동 전략까지 확장한 리포트 자동화
+- 데이터/모델/API/UI/배포 전 과정을 단독으로 구현
 
-- 서비스 배포 준비.
-
+---
