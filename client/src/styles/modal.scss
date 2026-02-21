@@ -14,6 +14,7 @@
 
 	.modal_container {
 		z-index: 20;
+		position: relative;
 
 		background: $color_white;
 		border-radius: 12px;
@@ -121,5 +122,6 @@
 				}
 			}
 		}
+
 	}
 }

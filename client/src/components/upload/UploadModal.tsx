@@ -4,6 +4,7 @@ import { predictCsv } from '../../shared/api';
 import type { EvaluationPolicy } from '../../shared/types';
 import { useEscapeClose } from '../../hooks/useEscapeClose';
 import OverlayHeader from '../common/OverlayHeader';
+import LoadingOverlay from '../common/LoadingOverlay';
 
 import '../../styles/modal.scss';
 
@@ -22,8 +23,14 @@ export default function UploadModal({ onClose, onSuccessNavigateTo }: Props) {
 	const navigate = useNavigate();
 	const [file, setFile] = useState<File | null>(null);
 	const [submitError, setSubmitError] = useState<string | null>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	useEscapeClose(onClose);
+	const handleClose = () => {
+		if (isSubmitting) return;
+		onClose();
+	};
+
+	useEscapeClose(handleClose);
 
 	// 입력은 string으로 들고 있다가, 제출 시 number 변환(HTML input 특성 대응)
 	const [form, setForm] = useState({
@@ -80,12 +87,13 @@ export default function UploadModal({ onClose, onSuccessNavigateTo }: Props) {
 		return errs;
 	}, [policy]);
 
-	const canSubmit = file && policy && errors.length === 0;
+	const canSubmit = file && policy && errors.length === 0 && !isSubmitting;
 
 	const onSubmit = async () => {
 		if (!canSubmit || !policy || !file) return;
 
 		setSubmitError(null);
+		setIsSubmitting(true);
 		try {
 			const result = await predictCsv({
 				file,
@@ -98,9 +106,10 @@ export default function UploadModal({ onClose, onSuccessNavigateTo }: Props) {
 		} catch (err) {
 			if (err instanceof Error && err.message) {
 				setSubmitError(err.message);
-				return;
+			} else {
+				setSubmitError('업로드 처리 중 오류가 발생했습니다.');
 			}
-			setSubmitError('업로드 처리 중 오류가 발생했습니다.');
+			setIsSubmitting(false);
 		}
 	};
 
@@ -109,51 +118,51 @@ export default function UploadModal({ onClose, onSuccessNavigateTo }: Props) {
 	};
 
 	return (
-		<div className='modal_wapper' onClick={onClose}>
+		<div className='modal_wapper' onClick={handleClose}>
 			<div className='modal_container' onClick={(e) => e.stopPropagation()}>
-				<OverlayHeader title='파일 업로드' onClose={onClose} className='modal_header' />
+				<OverlayHeader title='파일 업로드' onClose={handleClose} className='modal_header' />
 				<div className='modal_body'>
-					<input className='modal_file_input' type='file' accept='.csv' onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+					<input className='modal_file_input' type='file' accept='.csv' disabled={isSubmitting} onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
 
 					<div className='modal_grid_item'>
 						<label>
 							<span className='title'>최성보 비율</span>
-							<input className='modal_text_input' value={form.threshold} onChange={(e) => setField('threshold', e.target.value)} />
+							<input className='modal_text_input' value={form.threshold} disabled={isSubmitting} onChange={(e) => setField('threshold', e.target.value)} />
 						</label>
 
 						<label>
 							<span className='title'>총 수업 횟수</span>
-							<input className='modal_text_input' value={form.total_classes} onChange={(e) => setField('total_classes', e.target.value)} />
+							<input className='modal_text_input' value={form.total_classes} disabled={isSubmitting} onChange={(e) => setField('total_classes', e.target.value)} />
 						</label>
 
 						<label>
 							<span className='title'>중간 만점</span>
-							<input className='modal_text_input' value={form.midterm_max} onChange={(e) => setField('midterm_max', e.target.value)} />
+							<input className='modal_text_input' value={form.midterm_max} disabled={isSubmitting} onChange={(e) => setField('midterm_max', e.target.value)} />
 						</label>
 
 						<label>
 							<span className='title'>중간 반영(%)</span>
-							<input className='modal_text_input' value={form.midterm_weight} onChange={(e) => setField('midterm_weight', e.target.value)} />
+							<input className='modal_text_input' value={form.midterm_weight} disabled={isSubmitting} onChange={(e) => setField('midterm_weight', e.target.value)} />
 						</label>
 
 						<label>
 							<span className='title'>기말 만점</span>
-							<input className='modal_text_input' value={form.final_max} onChange={(e) => setField('final_max', e.target.value)} />
+							<input className='modal_text_input' value={form.final_max} disabled={isSubmitting} onChange={(e) => setField('final_max', e.target.value)} />
 						</label>
 
 						<label>
 							<span className='title'>기말 반영(%)</span>
-							<input className='modal_text_input' value={form.final_weight} onChange={(e) => setField('final_weight', e.target.value)} />
+							<input className='modal_text_input' value={form.final_weight} disabled={isSubmitting} onChange={(e) => setField('final_weight', e.target.value)} />
 						</label>
 
 						<label>
 							<span className='title'>수행 만점</span>
-							<input className='modal_text_input' value={form.performance_max} onChange={(e) => setField('performance_max', e.target.value)} />
+							<input className='modal_text_input' value={form.performance_max} disabled={isSubmitting} onChange={(e) => setField('performance_max', e.target.value)} />
 						</label>
 
 						<label>
 							<span className='title'>수행 반영(%)</span>
-							<input className='modal_text_input' value={form.performance_weight} onChange={(e) => setField('performance_weight', e.target.value)} />
+							<input className='modal_text_input' value={form.performance_weight} disabled={isSubmitting} onChange={(e) => setField('performance_weight', e.target.value)} />
 						</label>
 					</div>
 				</div>
@@ -175,9 +184,12 @@ export default function UploadModal({ onClose, onSuccessNavigateTo }: Props) {
 				)}
 				<div className='modal_footer'>
 					<button onClick={onSubmit} disabled={!canSubmit}>
-						업로드
+						{isSubmitting ? '처리 중...' : '업로드'}
 					</button>
 				</div>
+				{isSubmitting && (
+					<LoadingOverlay message='예측 결과를 생성하는 중입니다...' ariaLabel='업로드 처리 중' />
+				)}
 			</div>
 		</div>
 	);
