@@ -11,7 +11,7 @@
 
 ---
 
-- 개발/운영 관점 상세는 [`README_DEV.md`](https://github.com/JunBeul/edutech-risk-prediction/blob/main/README_DEV.md)를 참고해주세요.
+- 개발/운영 관점 상세는 [`README_DEV.md`](/README_DEV.md)를 참고해주세요.
 
 ---
 
@@ -153,16 +153,6 @@ EDA 이후 위험군 분류 baseline으로 Logistic Regression을 먼저 확정�
 - `midterm_score`: -1.278
 - `performance_score`: -1.289
 
-추가 해석(순열 중요도):
-
-![Permutation Importance](reports/figures/permutation_importance_bar.png)
-
-- `absence_count`가 가장 큰 중요도(`importance_mean ≈ 0.0536`)를 보여, 결석 정보가 위험군 예측에 가장 크게 기여했습니다.
-- 다음으로 `participation_level_num`(`≈ 0.0329`), `behavior_score`(`≈ 0.0223`), `midterm_score`(`≈ 0.0202`) 순으로 영향을 주며, 학습 참여/행동/중간 성취 신호가 핵심 변수로 작동했습니다.
-- `night_study`, `question_count`는 보조적인 신호(약 `0.004`대)로 해석할 수 있고, `assignment_count` 영향은 매우 작았습니다.
-- `midterm_score`, `final_score`, `performance_score` 및 결측 플래그 변수들(`*_missing`)는 결측이 가능하기에 이를 유의해서 읽어야 합니다.
-- 순열 중요도는 상관된 변수들 사이에서 중요도가 나뉠 수 있으므로, 계수 해석(Logistic Regression)과 함께 보는 것을 기준으로 삼았습니다.
-
 ### 3단계: 성능 평가 기준 설계
 
 모델을 선택한 뒤, 지표를 "정확도 단일 기준"이 아니라 현장 개입 목적 기준으로 정했습니다.
@@ -175,6 +165,41 @@ EDA 이후 위험군 분류 baseline으로 Logistic Regression을 먼저 확정�
 - Accuracy: 보조 지표
 
 또한 단일 split 과대평가를 피하기 위해 5-Fold CV 결과를 함께 사용했습니다.
+
+5-Fold CV 평균(`reports/tables/cv_metrics_logistic.csv`)
+
+- Accuracy: **0.9900**
+- Precision: **0.9963**
+- Recall: **0.9925**
+- F1: **0.9943**
+
+#### 추가 이미지:
+
+> 해석 주의:
+>
+> - 저장소 데이터는 더미(시뮬레이션) 데이터입니다.
+> - 단일 학습 지표(1.0)는 과대평가 가능성이 있으므로 CV/외부 검증 중심으로 해석합니다.
+> - 본 프로젝트의 핵심 성과는 "운영 가능한 파이프라인 + 개입 가능한 리포트" 구축입니다.
+
+- 혼동 행렬
+  ![혼동행렬](reports/figures/cm_logistic_regression.png)
+
+- 성취율 분호
+  ![성취율 분포](reports/figures/achievement_rate_distribution.png)
+
+- 위험군 비율 비교
+  ![데이터셋 위험군 비율 비교](reports/figures/risk_rate_comparison.png)
+
+- 순열 중요도:
+  ![Permutation Importance](reports/figures/permutation_importance_bar.png)
+
+순열 중요도 해석:
+
+- `absence_count`가 가장 큰 중요도(`importance_mean ≈ 0.0536`)를 보여, 결석 정보가 위험군 예측에 가장 크게 기여했습니다.
+- 다음으로 `participation_level_num`(`≈ 0.0329`), `behavior_score`(`≈ 0.0223`), `midterm_score`(`≈ 0.0202`) 순으로 영향을 주며, 학습 참여/행동/중간 성취 신호가 핵심 변수로 작동했습니다.
+- `night_study`, `question_count`는 보조적인 신호(약 `0.004`대)로 해석할 수 있고, `assignment_count` 영향은 매우 작았습니다.
+- `midterm_score`, `final_score`, `performance_score` 및 결측 플래그 변수들(`*_missing`)는 결측이 가능하기에 이를 유의해서 읽어야 합니다.
+- 순열 중요도는 상관된 변수들 사이에서 중요도가 나뉠 수 있으므로, 계수 해석(Logistic Regression)과 함께 보는 것을 기준으로 삼았습니다.
 
 ### 4단계: 파이썬 모듈화 + 개입전략/리포트 자동화
 
@@ -219,30 +244,7 @@ EDA 이후 위험군 분류 baseline으로 Logistic Regression을 먼저 확정�
 
 ---
 
-## 6. 성능 요약
-
-5-Fold CV 평균(`reports/tables/cv_metrics_logistic.csv`)
-
-- Accuracy: **0.9900**
-- Precision: **0.9963**
-- Recall: **0.9925**
-- F1: **0.9943**
-
-추가 이미지:
-
-![혼동행렬](reports/figures/cm_logistic_regression.png)
-![성취율 분포](reports/figures/achievement_rate_distribution.png)
-![데이터셋 위험군 비율 비교](reports/figures/risk_rate_comparison.png)
-
-해석 주의:
-
-- 저장소 데이터는 더미(시뮬레이션) 데이터입니다.
-- 단일 학습 지표(1.0)는 과대평가 가능성이 있으므로 CV/외부 검증 중심으로 해석합니다.
-- 본 프로젝트의 핵심 성과는 "운영 가능한 파이프라인 + 개입 가능한 리포트" 구축입니다.
-
----
-
-## 7. 빠른 실행
+## 6. 빠른 실행
 
 ### 요구사항
 
@@ -276,7 +278,7 @@ npm run dev
 
 ---
 
-## 8. 프로젝트 구조
+## 7. 프로젝트 구조
 
 ```text
 edutech-risk-prediction/
@@ -293,7 +295,7 @@ edutech-risk-prediction/
 
 ---
 
-## 9. 프로젝트 포인트
+## 8. 프로젝트 포인트
 
 - 실험 노트북 -> 서비스 코드로 전환한 제품화 경험
 - 모델 선택/평가 기준을 교육 개입 목적과 연결해 설명 가능

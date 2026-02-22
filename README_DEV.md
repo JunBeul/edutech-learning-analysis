@@ -3,7 +3,7 @@
 개발자/협업자 관점에서 프로젝트를 빠르게 이해하고 재현하기 위한 문서입니다.
 
 - 서비스 URL: https://maplight.onrender.com
-- 루트 README: [`README.md`](https://github.com/JunBeul/edutech-risk-prediction?tab=readme-ov-file)
+- 루트 README: [`README.md`](/README.md)
 
 ---
 
