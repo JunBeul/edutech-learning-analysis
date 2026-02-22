@@ -7,15 +7,15 @@
 데이터 기반으로 경감하는 것을 목표로 합니다.
 
 - 배포 서비스: https://maplight.onrender.com
-- render의 무료 플랜을 통해 배포되어 첫 시작에 오랜 시간이 소요(cold-start)됩니다.
+- Render 무료 플랜으로 배포되어 첫 시작에 오랜 시간이 소요(cold-start)됩니다.
 
 ---
 
-- 개발/운영 관점 상세는 [`README_DEV.md`](/README_DEV.md)를 참고해주세요.
+개발/운영/재현 가이드는 [`README_DEV.md`](README_DEV.md)를 참고해주세요.
 
 ---
 
-## 1. 왜 이 프로젝트를 만들었는가
+## 1. 프로젝트 개요
 
 2022 개정 교육과정에서는 최소성취수준 보장지도가 도입되었습니다. 다음 조건에 해당하는 학생은 보충지도를 의무적으로 실시해야 합니다.
 
@@ -119,8 +119,6 @@
 ![EDA: 과제 제출과 위험군](reports/figures/eda_assignment_vs_risk.png)
 ![EDA: 참여도와 위험군](reports/figures/eda_participation_vs_risk.png)
 
-> [이미지 추가 예정] EDA 인사이트 요약 슬라이드형 이미지
-
 전처리 구현 결과:
 
 - `backend/src/preprocessing.py`로 파이프라인 모듈화
@@ -174,15 +172,12 @@ EDA 이후 위험군 분류 baseline으로 Logistic Regression을 먼저 확정�
 
 #### 성능평가 결과:
 
-- Accuracy: **0.9900**
-- Precision: **0.9963**
-- Recall: **0.9925**
-- F1: **0.9943**
-
-- Accuracy (Std): **0.0091**
-- Precision (Std): **0.0083**
-- Recall (Std): **0.0103**
-- F1 (Std): **0.0052**
+| Metric    |       Mean |        Std |
+| --------- | ---------: | ---------: |
+| Accuracy  | **0.9900** | **0.0091** |
+| Precision | **0.9963** | **0.0083** |
+| Recall    | **0.9925** | **0.0103** |
+| F1        | **0.9943** | **0.0052** |
 
 위 지표는 `reports/tables/cv_metrics_logistic.csv` 기반 5-Fold CV 입니다.
 
@@ -197,7 +192,7 @@ EDA 이후 위험군 분류 baseline으로 Logistic Regression을 먼저 확정�
 - 위험군 비율 비교
   ![데이터셋 위험군 비율 비교](reports/figures/risk_rate_comparison.png)
 
-결과 해석 :
+결과 해석:
 
 - 평균 Recall **0.9925**(Std **0.0103**)로 위험군 누락을 거의 만들지 않는 패턴을 보여, 본 프로젝트의 핵심 목표(개입 대상 선별)와 지표 선택 기준이 일치합니다.
 - Precision **0.9963**도 함께 높아 과개입 가능성은 낮게 나타났고, Recall-Precision 균형 지표인 F1(**0.9943**) 역시 안정적입니다.
@@ -209,9 +204,9 @@ EDA 이후 위험군 분류 baseline으로 Logistic Regression을 먼저 확정�
 
 ![Permutation Importance](reports/figures/permutation_importance_bar.png)
 
-Permutation Importance(`reports/tables/feature_importance_logistic.csv`)
+Permutation Importance(`reports/tables/permutation_importance.csv`)
 
-결과 해석 :
+결과 해석:
 
 - `absence_count`가 가장 큰 중요도(`importance_mean ≈ 0.0536`)를 보여, 결석 정보가 위험군 예측에 가장 크게 기여했습니다.
 - 다음으로 `participation_level_num`(`≈ 0.0329`), `behavior_score`(`≈ 0.0223`), `midterm_score`(`≈ 0.0202`) 순으로 영향을 주며, 학습 참여/행동/중간 성취 신호가 핵심 변수로 작동했습니다.
@@ -261,60 +256,7 @@ Permutation Importance(`reports/tables/feature_importance_logistic.csv`)
 
 ---
 
-## 6. 빠른 실행
-
-> 상세 내용은 [`README_DEV.md`](/README_DEV.md)를 참고해주세요.
-
-### 요구사항
-
-- Python 3.11+
-- Node.js 20+
-
-### 설치
-
-```bash
-pip install -r requirements.txt
-npm install
-npm --prefix client install
-```
-
-### 프론트 환경변수
-
-`client/.env`
-
-```env
-VITE_API_BASE_URL=http://127.0.0.1:8000
-```
-
-### 실행
-
-```bash
-npm run dev
-```
-
-- Frontend: `http://localhost:5173`
-- Backend: `http://127.0.0.1:8000`
-
----
-
-## 7. 프로젝트 구조
-
-```text
-edutech-risk-prediction/
-├─ backend/
-│  ├─ api/                  # FastAPI 엔드포인트
-│  ├─ src/                  # 전처리/리포트 공통 로직
-│  └─ scripts/              # 학습/리포트/스모크 테스트
-├─ client/                  # React 대시보드
-├─ data/dummy/              # 더미 데이터
-├─ models/                  # 모델 산출물
-├─ reports/                 # 지표/이미지/리포트
-└─ docs/                    # 이슈/회고/학습 문서
-```
-
----
-
-## 8. 프로젝트 포인트
+## 6. 프로젝트 포인트
 
 - 실험 노트북 -> 서비스 코드로 전환한 제품화 경험
 - 모델 선택/평가 기준을 교육 개입 목적과 연결해 설명 가능

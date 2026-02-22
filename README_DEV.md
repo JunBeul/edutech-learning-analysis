@@ -1,21 +1,43 @@
-﻿# README_DEV
+﻿# 개발/재현 가이드 (README_DEV)
 
-개발자/협업자 관점에서 프로젝트를 빠르게 이해하고 재현하기 위한 문서입니다.
+프로젝트를 로컬에서 실행하고, 재현하고, 점검하기 위한 문서입니다.
+프로젝트 배경/성과 중심 설명은 루트 README를 참고하고, 이 문서는 실행/환경/API/배포 재현에 집중합니다.
 
 - 서비스 URL: https://maplight.onrender.com
-- 루트 README: [`README.md`](/README.md)
+- 루트 README: [`README.md`](README.md)
 
 ---
 
-## 1. 개발 목표
+## 프로젝트 디렉터리
 
-- 중간 시점 데이터로 위험군 예측
-- 예측 점수뿐 아니라 교사 개입 가능한 설명 컬럼 생성
-- 단일 저장소에서 API + UI + 배포까지 재현 가능하게 구성
+```text
+edutech-risk-prediction/
+├─ backend/
+│  ├─ api/                  # FastAPI 엔드포인트
+│  ├─ src/                  # 전처리/리포트 공통 로직
+│  └─ scripts/              # 학습/리포트/스모크 테스트
+├─ client/                  # React 대시보드
+├─ data/dummy/              # 더미 데이터
+├─ models/                  # 모델 산출물
+├─ reports/                 # 지표/이미지/리포트
+└─ docs/                    # 이슈/회고/학습 문서
+```
 
 ---
 
-## 2. 실행 환경
+## 빠른 진입 순서
+
+클린 클론 기준으로 가장 빠른 확인 순서는 아래와 같습니다.
+
+1. `1. 실행 환경`에서 Python/Node 버전과 가상환경 준비
+2. `2. 환경변수`에서 루트 `.env`, `client/.env` 생성
+3. `3. 로컬 실행`의 `0) 모델 파일 확인`으로 모델 파일 생성
+4. `3. 로컬 실행`에서 `npm run dev` 실행
+5. `7. API 스펙 요약`의 헬스체크/샘플 API로 동작 확인
+
+---
+
+## 1. 실행 환경
 
 ### 필수
 
@@ -50,7 +72,7 @@ npm --prefix client install
 
 ---
 
-## 3. 환경변수
+## 2. 환경변수
 
 ### 루트 `.env` (백엔드)
 
@@ -104,9 +126,9 @@ Copy-Item client/.env.example client/.env
 
 ---
 
-## 4. 로컬 실행
+## 3. 로컬 실행
 
-### 0) 모델 파일 확인 (클린 클론 중요)
+### 0) 모델 파일 확인 (클린 클론 필수)
 
 `models/logistic_model.joblib`가 없으면 `POST /api/predict`에서 500 에러가 발생합니다.
 
@@ -137,7 +159,7 @@ npm run dev:front
 
 ---
 
-## 5. 데이터 계약(업로드 스키마)
+## 4. 데이터 계약(업로드 스키마)
 
 필수 컬럼:
 
@@ -156,7 +178,7 @@ npm run dev:front
 
 ---
 
-## 6. 전처리 파이프라인 요약
+## 5. 전처리 파이프라인 요약
 
 `backend/src/preprocessing.py`
 
@@ -176,7 +198,7 @@ npm run dev:front
 
 ---
 
-## 7. 모델 학습/추론
+## 6. 모델 학습/추론
 
 ### 학습
 
@@ -219,7 +241,7 @@ python backend/scripts/smoke_test_preprocessing.py
 
 ---
 
-## 8. API 스펙 요약
+## 7. API 스펙 요약
 
 `backend/api/main.py`
 
@@ -261,7 +283,7 @@ python backend/scripts/smoke_test_preprocessing.py
 
 ---
 
-## 9. 프론트 구조 요약
+## 8. 프론트 구조 요약
 
 - 페이지
   - `client/src/pages/LandingPage.tsx`
@@ -275,7 +297,7 @@ python backend/scripts/smoke_test_preprocessing.py
 
 ---
 
-## 10. Docker/배포
+## 9. Docker/배포
 
 `Dockerfile` 기준:
 
@@ -294,7 +316,7 @@ docker run --rm -d -p 8000:8000 --name edutech-app edutech-risk-prediction:local
 
 ---
 
-## 11. 주요 이슈/회고 문서
+## 10. 주요 이슈/회고 문서
 
 `docs/` 참고:
 
@@ -311,20 +333,3 @@ docker run --rm -d -p 8000:8000 --name edutech-app edutech-risk-prediction:local
 - 학습/추론 피처 계약을 명시적으로 고정
 - 전처리 변경 시 스모크 테스트로 회귀를 빠르게 확인
 - 배포 환경의 API base URL 하드코딩 리스크를 사전에 차단
-
----
-
-## 12. 디렉터리
-
-```text
-edutech-risk-prediction/
-├─ backend/
-│  ├─ api/
-│  ├─ src/
-│  └─ scripts/
-├─ client/
-├─ data/dummy/
-├─ models/
-├─ reports/
-└─ docs/
-```
