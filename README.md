@@ -157,43 +157,61 @@ EDA 이후 위험군 분류 baseline으로 Logistic Regression을 먼저 확정�
 
 모델을 선택한 뒤, 지표를 "정확도 단일 기준"이 아니라 현장 개입 목적 기준으로 정했습니다.
 
-#### 왜 이 기준으로 성능 평가를 했는가
-
-- Recall: 위험군 누락 최소화(개입 대상 놓치지 않기)
-- Precision: 과개입/자원 낭비 방지
-- F1: Recall-Precision 균형 확인
-- Accuracy: 보조 지표
-
-또한 단일 split 과대평가를 피하기 위해 5-Fold CV 결과를 함께 사용했습니다.
-
-5-Fold CV 평균(`reports/tables/cv_metrics_logistic.csv`)
-
-- Accuracy: **0.9900**
-- Precision: **0.9963**
-- Recall: **0.9925**
-- F1: **0.9943**
-
-#### 추가 이미지:
-
 > 해석 주의:
 >
 > - 저장소 데이터는 더미(시뮬레이션) 데이터입니다.
 > - 단일 학습 지표(1.0)는 과대평가 가능성이 있으므로 CV/외부 검증 중심으로 해석합니다.
 > - 본 프로젝트의 핵심 성과는 "운영 가능한 파이프라인 + 개입 가능한 리포트" 구축입니다.
 
+#### 성능 평가 기준 선정
+
+- Recall: 위험군 누락 최소화(개입 대상 놓치지 않기)
+- Precision: 과개입/자원 낭비 방지
+- F1: Recall-Precision 균형 확인
+- Accuracy: 보조 지표
+
+또한 단일 split 과대평가를 피하기 위해 5-Fold CV(교차 검증) 결과를 함께 사용했습니다.
+
+#### 성능평가 결과:
+
+- Accuracy: **0.9900**
+- Precision: **0.9963**
+- Recall: **0.9925**
+- F1: **0.9943**
+
+- Accuracy (Std): **0.0091**
+- Precision (Std): **0.0083**
+- Recall (Std): **0.0103**
+- F1 (Std): **0.0052**
+
+위 지표는 `reports/tables/cv_metrics_logistic.csv` 기반 5-Fold CV 입니다.
+
+시각화 참고(혼동행렬은 holdout 예측 결과, 나머지 그래프는 데이터 분포 확인용):
+
 - 혼동 행렬
   ![혼동행렬](reports/figures/cm_logistic_regression.png)
 
-- 성취율 분호
+- 성취율 분포
   ![성취율 분포](reports/figures/achievement_rate_distribution.png)
 
 - 위험군 비율 비교
   ![데이터셋 위험군 비율 비교](reports/figures/risk_rate_comparison.png)
 
-- 순열 중요도:
-  ![Permutation Importance](reports/figures/permutation_importance_bar.png)
+결과 해석 :
 
-순열 중요도 해석:
+- 평균 Recall **0.9925**(Std **0.0103**)로 위험군 누락을 거의 만들지 않는 패턴을 보여, 본 프로젝트의 핵심 목표(개입 대상 선별)와 지표 선택 기준이 일치합니다.
+- Precision **0.9963**도 함께 높아 과개입 가능성은 낮게 나타났고, Recall-Precision 균형 지표인 F1(**0.9943**) 역시 안정적입니다.
+- Fold별 점수가 `0.983~1.000` 범위에 머물러 데이터 분할에 따른 성능 흔들림이 크지 않으며, 현재 더미 데이터 기준에서는 분류 경계가 일관되게 형성됩니다.
+- 다만 holdout 혼동행렬(`[[7, 0], [0, 53]]`)과 일부 Fold의 완전 분류(1.000)는 실제 성능 보장이라기보다 더미 데이터의 높은 분리도 영향을 크게 받았을 가능성이 큽니다.
+- 따라서 이 결과는 “모델 일반화 성능 확정”보다 “운영 가능한 위험군 예측 파이프라인/리포트 동작 검증”의 근거로 해석하고, 실제 데이터 적용 시 외부 검증, 임계값 재조정이 필요합니다.
+
+#### 순열 중요도 결과:
+
+![Permutation Importance](reports/figures/permutation_importance_bar.png)
+
+Permutation Importance(`reports/tables/feature_importance_logistic.csv`)
+
+결과 해석 :
 
 - `absence_count`가 가장 큰 중요도(`importance_mean ≈ 0.0536`)를 보여, 결석 정보가 위험군 예측에 가장 크게 기여했습니다.
 - 다음으로 `participation_level_num`(`≈ 0.0329`), `behavior_score`(`≈ 0.0223`), `midterm_score`(`≈ 0.0202`) 순으로 영향을 주며, 학습 참여/행동/중간 성취 신호가 핵심 변수로 작동했습니다.
@@ -239,11 +257,13 @@ EDA 이후 위험군 분류 baseline으로 Logistic Regression을 먼저 확정�
 - Render 단일 서비스 배포
 - 서비스 URL: https://maplight.onrender.com
 
-> 스크린샷 모음 (PC / Mobile): [`screenshots.md`](docs/_README_screenshots.md)
+> 페이지 스크린샷 (PC / Mobile): [`screenshots.md`](docs/_README_screenshots.md)
 
 ---
 
 ## 6. 빠른 실행
+
+> 상세 내용은 [`README_DEV.md`](/README_DEV.md)를 참고해주세요.
 
 ### 요구사항
 

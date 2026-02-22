@@ -114,7 +114,7 @@ Copy-Item client/.env.example client/.env
 python backend/scripts/train_model.py
 ```
 
-### 통합 개발 서버
+### 통합 개발 서버 (백+프론트 동시 실행)
 
 ```bash
 npm run dev
@@ -152,7 +152,7 @@ npm run dev:front
 - `absence_count`
 - `behavior_score`
 
-중간 시점 데이터에서 일부 점수(`final_score`) 결측/all-NaN이 발생하는 케이스를 전제로 설계되어 있습니다.
+중간 시점 데이터에서 일부 점수(`midterm_score`, `final_score`, `performance_score`) 결측/all-NaN이 발생하는 케이스를 전제로 설계되어 있습니다.
 
 ---
 
