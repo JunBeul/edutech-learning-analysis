@@ -112,12 +112,16 @@
 - 과제/참여도와 위험군 관계
 - 중간 시점 특성상 `final_score` 결측(all-NaN) 처리 필요성
 
-이미지(현재 저장소 기준):
+결과 이미지:
 
-![EDA: 결석과 위험군](reports/figures/eda_absence_vs_risk.png)
-![EDA: 수행평가와 위험군](reports/figures/eda_performance_vs_risk.png)
-![EDA: 과제 제출과 위험군](reports/figures/eda_assignment_vs_risk.png)
-![EDA: 참여도와 위험군](reports/figures/eda_participation_vs_risk.png)
+- 결석과 위험군
+  ![EDA: 결석과 위험군](reports/figures/eda_absence_vs_risk.png)
+- 수행평가와 위험군
+  ![EDA: 수행평가와 위험군](reports/figures/eda_performance_vs_risk.png)
+- 과제 제출과 위험군
+  ![EDA: 과제 제출과 위험군](reports/figures/eda_assignment_vs_risk.png)
+- 참여도와 위험군
+  ![EDA: 참여도와 위험군](reports/figures/eda_participation_vs_risk.png)
 
 전처리 구현 결과:
 
