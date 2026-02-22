@@ -153,6 +153,16 @@ EDA 이후 위험군 분류 baseline으로 Logistic Regression을 먼저 확정�
 - `midterm_score`: -1.278
 - `performance_score`: -1.289
 
+추가 해석(순열 중요도):
+
+![Permutation Importance](reports/figures/permutation_importance_bar.png)
+
+- `absence_count`가 가장 큰 중요도(`importance_mean ≈ 0.0536`)를 보여, 결석 정보가 위험군 예측에 가장 크게 기여했습니다.
+- 다음으로 `participation_level_num`(`≈ 0.0329`), `behavior_score`(`≈ 0.0223`), `midterm_score`(`≈ 0.0202`) 순으로 영향을 주며, 학습 참여/행동/중간 성취 신호가 핵심 변수로 작동했습니다.
+- `night_study`, `question_count`는 보조적인 신호(약 `0.004`대)로 해석할 수 있고, `assignment_count` 영향은 매우 작았습니다.
+- `midterm_score`, `final_score`, `performance_score` 및 결측 플래그 변수들(`*_missing`)는 결측이 가능하기에 이를 유의해서 읽어야 합니다.
+- 순열 중요도는 상관된 변수들 사이에서 중요도가 나뉠 수 있으므로, 계수 해석(Logistic Regression)과 함께 보는 것을 기준으로 삼았습니다.
+
 ### 3단계: 성능 평가 기준 설계
 
 모델을 선택한 뒤, 지표를 "정확도 단일 기준"이 아니라 현장 개입 목적 기준으로 정했습니다.
