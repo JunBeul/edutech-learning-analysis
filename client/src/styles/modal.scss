@@ -1,12 +1,12 @@
 @use './breakpoints' as *;
-@use 'sass:color';
+@use './theme' as *;
 
 .modal_wapper {
 	z-index: 10;
 	position: fixed;
 
 	inset: 0;
-	background: color.change($color_black, $alpha: 0.2);
+	background: var(--overlay-backdrop-scrim);
 	backdrop-filter: blur(6px);
 	-webkit-backdrop-filter: blur(6px);
 	display: grid;
@@ -17,17 +17,17 @@
 	z-index: 20;
 
 	width: min(560px, 92vw);
-	max-height: 90vh;
+	max-height: 90dvh;
 	padding: 20px;
 
 	position: relative;
 
-	background: $color_white;
-	border-radius: 1.2vh;
+	background: var(--surface-panel);
+	border-radius: 1.2dvh;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 10px 30px var(--shadow-panel);
 
 	.modal_header {
 		z-index: 30;
@@ -45,18 +45,18 @@
 
 		.modal_file_input {
 			padding: 12px;
-			border: 2px dashed color.change($color_black, $alpha: 0.2);
+			border: 2px dashed var(--border-dropzone-subtle);
 			border-radius: 8px;
 			text-align: center;
 			cursor: pointer;
 			transition: border-color 0.2s ease;
 
 			&:hover {
-				border-color: $color_green;
+				border-color: var(--color-success);
 			}
 
 			&:focus-visible {
-				border: 2px solid $color_gray;
+				border: 2px solid var(--border-default);
 			}
 		}
 
@@ -82,23 +82,23 @@
 				padding: 3px;
 				margin-top: 4px;
 				border: none;
-				border-bottom: 2px solid color.change($color_black, $alpha: 0.1);
+				border-bottom: 2px solid var(--border-field-subtle);
 				&:focus {
 					outline: none;
-					border-color: $color_green;
+					border-color: var(--color-success);
 				}
 				&.is-error {
-					border-bottom-color: $color_red;
+					border-bottom-color: var(--color-danger-bg);
 				}
 				&.is-error:focus {
-					border-bottom-color: $color_red;
+					border-bottom-color: var(--color-danger-bg);
 				}
 			}
 		}
 	}
 	.modal_errors {
-		background: color.adjust($color_red, $lightness: 35%);
-		color: color.adjust($color_red, $lightness: -15%);
+		background: var(--feedback-danger-bg-subtle);
+		color: var(--feedback-danger-fg);
 		border-radius: 8px;
 		padding: 12px;
 
@@ -120,12 +120,12 @@
 			border: none;
 			border-radius: 8px;
 			font-weight: bold;
-			color: $color_white;
+			color: var(--button-primary-fg);
 			cursor: pointer;
-			background-color: $color_green;
+			background-color: var(--button-primary-bg);
 
 			&:disabled {
-				background-color: color.adjust($color_gray, $lightness: 20%);
+				background-color: var(--button-disabled-bg);
 				cursor: not-allowed;
 			}
 		}
@@ -134,7 +134,7 @@
 
 @media (max-width: $mobile) {
 	.modal_container {
-		max-height: 85vh;
+		max-height: 85dvh;
 		.modal_body {
 			.modal_grid_item {
 				grid-template-columns: 1fr;

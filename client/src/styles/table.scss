@@ -1,3 +1,6 @@
+@use './breakpoints' as *;
+@use './theme' as *;
+
 .table_wrapper {
 	width: 100%;
 	overflow: visible;
@@ -19,12 +22,14 @@
 	th,
 	td {
 		padding: 10px 12px;
-		border-bottom: 1px solid #eee;
+		border-bottom: 1px solid var(--table-border-default);
 		text-align: left;
 		white-space: nowrap;
 	}
 	thead th {
-		background: #f9fafb;
+		background: var(--table-header-bg);
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
 		position: static;
 		transition: none;
 	}
@@ -33,7 +38,7 @@
 		cursor: pointer;
 
 		&:hover {
-			background: #f3f4f6;
+			background: var(--table-row-bg-hover);
 		}
 	}
 }

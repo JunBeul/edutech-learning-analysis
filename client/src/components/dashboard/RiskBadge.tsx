@@ -10,17 +10,19 @@ export default function RiskBadge({ level }: Props) {
 	};
 
 	return (
-		<span
+		<div
 			style={{
 				background: colorMap[level] ?? '#ccc',
 				color: 'white',
 				padding: '2px 8px',
-				borderRadius: 6,
+				borderRadius: '100dvh',
 				fontSize: 12,
-				fontWeight: 600
+				fontWeight: 'bold',
+				width: '100%',
+				textAlign: 'center'
 			}}
 		>
 			{level}
-		</span>
+		</div>
 	);
 }

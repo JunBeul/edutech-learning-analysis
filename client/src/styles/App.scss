@@ -1,0 +1,34 @@
+@use './theme';
+
+@include theme.export-theme-vars();
+
+*:hover {
+	transition: all 0.2s;
+}
+
+.btn {
+	padding: 10px 16px;
+	border-radius: 0.6dvh;
+	font-weight: bold;
+	border: 1px solid transparent;
+
+	&.btn_primary {
+		background: var(--button-primary-bg);
+		color: var(--button-primary-fg);
+
+		&:hover {
+			background: var(--button-primary-bg-hover);
+		}
+	}
+
+	&.btn_secondary {
+		background: var(--button-secondary-bg);
+		color: var(--button-secondary-fg);
+		border-color: var(--button-secondary-border);
+
+		&:hover {
+			background: var(--button-secondary-bg-hover);
+			border-color: var(--button-secondary-border-hover);
+		}
+	}
+}

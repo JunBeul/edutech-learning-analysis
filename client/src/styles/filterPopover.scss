@@ -1,15 +1,16 @@
 @use './breakpoints' as *;
-@use 'sass:color';
+@use './theme' as *;
 
 .filter_wapper {
 	width: max-content;
 	width: 260px;
 	position: absolute;
-	background-color: $color_white;
-	border: 1px solid color.scale($color_white, $lightness: -20%);
-	border-radius: 1vh;
+	background-color: var(--surface-panel);
+	border: 1px solid var(--border-panel-default);
+	border-radius: 1dvh;
 	padding: 12px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 2px 8px var(--shadow-panel);
+	color: var(--text-primary);
 	z-index: 5;
 
 	.fillter_header {
@@ -27,7 +28,7 @@
 			border-radius: 4px;
 			width: 24px;
 			height: 24px;
-			color: color.adjust($color_gray, $lightness: -25%);
+			color: var(--control-fg-muted);
 
 			svg {
 				width: 100%;
@@ -36,8 +37,8 @@
 			}
 
 			&:hover {
-				background-color: color.adjust($color_gray, $alpha: -0.9);
-				color: $color_black;
+				background-color: var(--control-bg-hover);
+				color: var(--text-primary);
 
 				svg {
 					transform: rotate(90deg);
@@ -68,9 +69,9 @@
 				gap: 6px;
 				padding: 6px 0;
 				border-radius: 4px;
-				border: 1px solid color.scale($color_white, $lightness: -20%);
-				background-color: $color_white;
-				color: color.adjust($color_gray, $lightness: -25%);
+				border: 1px solid var(--border-panel-default);
+				background-color: var(--surface-panel);
+				color: var(--control-fg-muted);
 				cursor: pointer;
 				text-align: center;
 
@@ -80,8 +81,8 @@
 				}
 
 				&:hover {
-					background-color: color.adjust($color_gray, $alpha: -0.9);
-					color: $color_black;
+					background-color: var(--control-bg-hover);
+					color: var(--text-primary);
 				}
 			}
 		}
@@ -98,7 +99,7 @@
 		}
 
 		.filter_rowDel_content {
-			border: 1px solid color.scale($color_white, $lightness: -10%);
+			border: 1px solid var(--border-panel-muted);
 			border-radius: 8px;
 			padding: 8px;
 			max-height: 180px;
@@ -126,29 +127,29 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			color: $color_white;
+			color: var(--color-danger-contrast);
 			position: relative;
 			overflow: hidden;
 
 			svg {
-				fill: $color_red;
+				fill: var(--color-danger-bg);
 				transition: opacity 0.15s ease;
 			}
 
 			&::after {
-				content: '열 숨기기';
+				content: '삭제하기';
 				position: absolute;
 				left: 50%;
 				top: 50%;
 				transform: translate(-50%, -50%);
-				color: $color_white;
+				color: var(--color-danger-contrast);
 				font-size: 13px;
 				font-weight: bold;
 				opacity: 0;
 			}
 
 			&:hover {
-				background-color: $color_red;
+				background-color: var(--color-danger-bg);
 
 				svg {
 					opacity: 0;

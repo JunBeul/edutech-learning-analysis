@@ -1,0 +1,152 @@
+@use 'sass:color';
+
+/* 기본 팔레트(원색만 사용, 구성 요소 스타일에 직접 사용하지 않음) */
+$color_red: #ef4444;
+$color_orange: #f59e0b;
+$color_green: #22c55e;
+$color_blue: #3b82f6;
+$color_gray: #6b7280;
+$color_black: #0d0d0e;
+$color_white: #fafbfb;
+$color_shadow: rgba(0, 0, 0, 0.15);
+
+@mixin export-theme-vars {
+	:root {
+		color-scheme: light;
+
+		/*
+			토큰 명명 규칙
+			- 1-카테고리: surface | border | text | control | button | color | table | feedback
+			- 2-역할/요소: panel, header, row, primary, secondary...
+			- 3-상태: hover, subtle, default, fg, bg
+		*/
+
+		/* Text */
+		--text-primary: #{$color_black};
+		--text-secondary: #{color.adjust($color_black, $lightness: 15%)};
+		--text-muted: #{color.adjust($color_black, $lightness: 30%)};
+		--text-dim: #{color.change($color_black, $alpha: 0.8)};
+
+		/* Surfaces */
+		--surface-page: #{color.adjust($color_white, $lightness: -1%)};
+		--surface-panel: #{$color_white};
+		--surface-panel-subtle: #{color.change($color_white, $alpha: 0.2)};
+		--surface-panel-glass: #{color.adjust($color_white, $alpha: -0.7)};
+		--surface-interactive-hover: #{color.adjust($color_white, $lightness: -5%)};
+		--surface-hero-gradient-start: #{color.change($color_white, $alpha: 0.1)};
+		--surface-hero-gradient-end: #{color.change($color_green, $alpha: 0.1)};
+		--surface-overlay-scrim: #{color.change($color_white, $alpha: 0.86)};
+
+		/* Borders / shadows */
+		--border-subtle: #{color.adjust($color_gray, $lightness: 40%)};
+		--border-default: #{$color_gray};
+		--border-panel-subtle: #{color.change($color_black, $alpha: 0.06)};
+		--border-control-subtle: #{color.adjust($color_black, $alpha: -0.8)};
+		--border-panel-default: #{color.scale($color_white, $lightness: -20%)};
+		--border-panel-muted: #{color.scale($color_white, $lightness: -10%)};
+		--border-field-subtle: #{color.change($color_black, $alpha: 0.1)};
+		--border-dropzone-subtle: #{color.change($color_black, $alpha: 0.2)};
+		--border-glass-subtle: #{$color_white};
+		--shadow-panel: #{$color_shadow};
+		--focus-ring-default: #{color.change($color_black, $alpha: 0.25)};
+
+		/* Accents */
+		--color-success: #{$color_green};
+		--color-success-hover: #{color.adjust($color_green, $lightness: -5%)};
+		--color-info-glow: #{color.change($color_blue, $alpha: 0.08)};
+		--color-success-glow: #{color.change($color_green, $alpha: 0.1)};
+		--color-danger-fg: #{color.adjust($color_red, $lightness: -5%)};
+		--color-danger-bg: #{$color_red};
+		--color-danger-contrast: #{$color_white};
+
+		/* UI controls / overlays */
+		--control-fg-muted: #{color.adjust($color_gray, $lightness: -25%)};
+		--control-bg-hover: #{color.adjust($color_gray, $alpha: -0.9)};
+		--overlay-backdrop-scrim: #{color.change($color_black, $alpha: 0.2)};
+		--loading-spinner-track: #{color.change($color_green, $alpha: 0.22)};
+		--feedback-danger-bg-subtle: #{color.adjust($color_red, $lightness: 35%)};
+		--feedback-danger-fg: #{color.adjust($color_red, $lightness: -15%)};
+		--table-border-default: #{color.adjust($color_gray, $lightness: 45%)};
+		--table-header-bg: #{color.adjust($color_gray, $alpha: -0.7)};
+		--table-row-bg-hover: #{color.adjust($color_white, $lightness: -5%)};
+
+		/* Buttons */
+		--button-primary-bg: var(--color-success);
+		--button-primary-fg: #{$color_white};
+		--button-primary-bg-hover: var(--color-success-hover);
+
+		--button-secondary-bg: #{$color_white};
+		--button-secondary-fg: #{$color_black};
+		--button-secondary-border: #{color.adjust($color_gray, $lightness: 30%)};
+		--button-secondary-border-default: #{$color_gray};
+		--button-secondary-bg-hover: #{color.adjust($color_white, $lightness: -5%)};
+		--button-secondary-border-hover: #{color.adjust($color_gray, $lightness: -5%)};
+		--button-disabled-bg: #{color.adjust($color_gray, $lightness: 20%)};
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root {
+			color-scheme: dark;
+
+			/* Text */
+			--text-primary: #f3f4f6;
+			--text-secondary: #d1d5db;
+			--text-muted: #9ca3af;
+			--text-dim: rgba(243, 244, 246, 0.82);
+
+			/* Surfaces */
+			--surface-page: #070b12;
+			--surface-panel: #111827;
+			--surface-panel-subtle: rgba(255, 255, 255, 0.05);
+			--surface-panel-glass: rgba(17, 24, 39, 0.72);
+			--surface-interactive-hover: #1f2937;
+			--surface-hero-gradient-start: rgba(255, 255, 255, 0.03);
+			--surface-hero-gradient-end: rgba(34, 197, 94, 0.1);
+			--surface-overlay-scrim: rgba(17, 24, 39, 0.88);
+
+			/* Borders / shadows */
+			--border-subtle: rgba(255, 255, 255, 0.14);
+			--border-default: #4b5563;
+			--border-panel-subtle: rgba(255, 255, 255, 0.08);
+			--border-control-subtle: rgba(255, 255, 255, 0.14);
+			--border-panel-default: #334155;
+			--border-panel-muted: #273244;
+			--border-field-subtle: rgba(255, 255, 255, 0.14);
+			--border-dropzone-subtle: rgba(255, 255, 255, 0.18);
+			--border-glass-subtle: rgba(255, 255, 255, 0.12);
+			--shadow-panel: rgba(0, 0, 0, 0.35);
+			--focus-ring-default: rgba(243, 244, 246, 0.3);
+
+			/* Accents */
+			--color-success: #22c55e;
+			--color-success-hover: #16a34a;
+			--color-info-glow: rgba(59, 130, 246, 0.12);
+			--color-success-glow: rgba(34, 197, 94, 0.14);
+			--color-danger-fg: #f87171;
+			--color-danger-bg: #ef4444;
+			--color-danger-contrast: #f9fafb;
+
+			/* UI controls / overlays */
+			--control-fg-muted: #cbd5e1;
+			--control-bg-hover: rgba(255, 255, 255, 0.07);
+			--overlay-backdrop-scrim: rgba(2, 6, 23, 0.52);
+			--loading-spinner-track: rgba(34, 197, 94, 0.3);
+			--feedback-danger-bg-subtle: rgba(239, 68, 68, 0.14);
+			--feedback-danger-fg: #fca5a5;
+			--table-border-default: rgba(255, 255, 255, 0.1);
+			--table-header-bg: rgba(30, 41, 59, 0.78);
+			--table-row-bg-hover: rgba(255, 255, 255, 0.03);
+
+			/* Buttons */
+			--button-primary-fg: #08120b;
+
+			--button-secondary-bg: #1f2937;
+			--button-secondary-fg: #f9fafb;
+			--button-secondary-border: #374151;
+			--button-secondary-border-default: #4b5563;
+			--button-secondary-bg-hover: #111827;
+			--button-secondary-border-hover: #6b7280;
+			--button-disabled-bg: #4b5563;
+		}
+	}
+}

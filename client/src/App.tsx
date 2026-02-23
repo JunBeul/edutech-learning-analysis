@@ -4,6 +4,8 @@ import LandingPage from './pages/LandingPage';
 import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 
+import './styles/App.scss';
+
 function RouteTitle() {
 	const location = useLocation();
 

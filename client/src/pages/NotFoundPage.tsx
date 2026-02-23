@@ -25,10 +25,10 @@ export default function NotFoundPage() {
 				<p className='not_found_desc'>입력한 주소가 잘못되었거나, 페이지가 이동되었을 수 있습니다.</p>
 
 				<div className='not_found_actions'>
-					<button type='button' className='not_found_btn is-primary' onClick={() => navigate('/', { replace: true })}>
+					<button type='button' className='btn btn_primary' onClick={() => navigate('/', { replace: true })}>
 						홈으로
 					</button>
-					<button type='button' className='not_found_btn is-secondary' onClick={handleBack}>
+					<button type='button' className='btn btn_secondary' onClick={handleBack}>
 						이전 페이지
 					</button>
 				</div>

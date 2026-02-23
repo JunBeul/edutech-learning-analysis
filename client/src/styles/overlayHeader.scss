@@ -1,5 +1,5 @@
 @use './breakpoints' as *;
-@use 'sass:color';
+@use './theme' as *;
 
 .overlay_header {
 	display: flex;
@@ -15,14 +15,14 @@
 	font-weight: 600;
 	text-align: center;
 	padding-left: 40px;
-	color: $color_black;
+	color: var(--text-primary);
 }
 
 .overlay_close_button {
 	border: 0;
 	background: transparent;
 	padding: 0;
-	border-radius: 1.2vh;
+	border-radius: 1.2dvh;
 	cursor: pointer;
 	width: 40px;
 	height: 40px;
@@ -31,7 +31,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: color.adjust($color_gray, $lightness: -25%);
+	color: var(--control-fg-muted);
 
 	svg {
 		width: 100%;
@@ -39,8 +39,8 @@
 	}
 
 	&:hover {
-		background-color: color.adjust($color_gray, $alpha: -0.9);
-		color: $color_black;
+		background-color: var(--control-bg-hover);
+		color: var(--text-primary);
 
 		svg {
 			transform: rotate(90deg);
@@ -48,6 +48,6 @@
 	}
 
 	&:focus-visible {
-		border: 2px solid $color_gray;
+		border: 2px solid var(--border-default);
 	}
 }

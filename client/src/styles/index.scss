@@ -1,5 +1,7 @@
 @use './breakpoints' as *;
 
+// 스타일 초기화
+
 /* box-sizing 규칙을 명시합니다. */
 *,
 *::before,
@@ -43,8 +45,10 @@ ol[role='list'] {
 
 /* 핵심 body의 기본값을 설정합니다. */
 body {
-	min-height: 100vh;
+	min-height: 100dvh;
 	line-height: 1.5;
+	background: var(--surface-page);
+	color: var(--text-primary);
 }
 
 /* 제목 요소와 상호작용하는 요소에 대해 line-height를 더 짧게 설정합니다. */
@@ -118,8 +122,4 @@ button {
 	&:focus {
 		outline: none;
 	}
-}
-
-*:hover {
-	transition: all 0.2s;
 }

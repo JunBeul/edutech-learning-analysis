@@ -44,10 +44,10 @@ export default function LandingPage() {
 					최소학력보장 지원 위험 학생을 조기에 식별하는 EduTech 프로젝트입니다.
 				</p>
 				<div className='landing_actions'>
-					<button className='landing_btn landing_btn_primary' onClick={() => setOpen(true)}>
+					<button className='btn btn_primary' onClick={() => setOpen(true)}>
 						파일 업로드
 					</button>
-					<button className='landing_btn landing_btn_secondary' onClick={onDownloadDummy}>
+					<button className='btn btn_secondary' onClick={onDownloadDummy}>
 						더미 파일 다운로드
 					</button>
 				</div>

@@ -1,12 +1,8 @@
 @use './breakpoints' as *;
-@use 'sass:color';
-
-body {
-	overflow-x: hidden; // 선택
-}
+@use './theme' as *;
 
 .page-container {
-	overflow: visible; // ✅ sticky 유지
+	overflow: visible;
 }
 
 .dashboard_header {
@@ -20,15 +16,16 @@ body {
 	z-index: 10;
 	padding: 16px;
 	transition: box-shadow 0.2s ease;
-	background-color: color.adjust($color_white, $alpha: -0.7);
+	background-color: var(--surface-panel-glass);
 	backdrop-filter: blur(6px);
 	-webkit-backdrop-filter: blur(6px);
-	border: 1px solid $color_white;
+	border: 1px solid var(--border-glass-subtle);
 	transition: all 0.2s ease;
 
 	h2 {
 		font-size: 2.2rem;
 		margin-right: auto;
+		color: var(--text-primary);
 		transition: font-size 0.2s ease;
 	}
 
@@ -36,8 +33,8 @@ body {
 		width: 85px;
 		aspect-ratio: 1 / 1;
 		padding: 8px;
-		border-radius: 1.2vh;
-		color: color.adjust($color_gray, $lightness: -25%);
+		border-radius: 1.2dvh;
+		color: var(--control-fg-muted);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -46,7 +43,7 @@ body {
 		gap: 4px;
 		font-size: 14px;
 		font-weight: bold;
-		border: 1px solid color.adjust($color_black, $alpha: -0.8);
+		border: 1px solid var(--border-control-subtle);
 
 		svg {
 			width: 40px;
@@ -58,8 +55,8 @@ body {
 		}
 
 		&:hover {
-			background-color: color.adjust($color_white, $lightness: -5%);
-			color: $color_black;
+			background-color: var(--surface-interactive-hover);
+			color: var(--text-primary);
 		}
 	}
 
@@ -76,7 +73,7 @@ body {
 			padding: 4px;
 			justify-content: center;
 			align-items: center;
-			background-color: $color_white;
+			background-color: var(--surface-panel);
 
 			svg {
 				width: 20px;
@@ -88,7 +85,7 @@ body {
 				display: none;
 			}
 			&:hover {
-				background-color: color.adjust($color_white, $lightness: -5%);
+				background-color: var(--surface-interactive-hover);
 			}
 		}
 	}
