@@ -259,14 +259,14 @@ python backend/scripts/smoke_test_preprocessing.py
 
 ```json
 {
-	"threshold": 0.4,
-	"midterm_max": 100,
-	"midterm_weight": 40,
-	"final_max": 100,
-	"final_weight": 40,
-	"performance_max": 100,
-	"performance_weight": 20,
-	"total_classes": 160
+  "threshold": 0.4,
+  "midterm_max": 100,
+  "midterm_weight": 40,
+  "final_max": 100,
+  "final_weight": 40,
+  "performance_max": 100,
+  "performance_weight": 20,
+  "total_classes": 160
 }
 ```
 
