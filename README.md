@@ -3,9 +3,6 @@
 학기 중간 시점의 학습/행동 데이터를 기반으로,  
 최소성취수준 보장지도 대상(위험군)을 조기에 식별하고 교사 개입까지 제공하는 End-to-End AI 서비스입니다.
 
-본 프로젝트는 교사가 예방지도를 위한 예비군을 선별해야 하는 현장 업무 부담을
-데이터 기반으로 경감하는 것을 목표로 합니다.
-
 - 배포 서비스: https://maplight.onrender.com
 - Render 무료 플랜으로 배포되어 첫 시작에 오랜 시간이 소요(cold-start)됩니다.
 
@@ -24,27 +21,14 @@
 
 문제는 학기 종료 후 성취율이 확정되기 때문에 학기 중간 시점에는 위험군 선별 기준이 부재하다는 점입니다.
 
-해당 프로젝트는 다음과 같은 의문을 해결하기 위해 시작합니다.
+해당 프로젝트는 교사가 예방지도를 위한 예비군을 선별해야 하는 현장 업무 부담을 데이터 기반으로 경감하는 것을 목표로, 다음과 같은 의문을 해결하기 위해 시작합니다.
 
 - 학기 중간 데이터만으로 위험군을 조기에 찾을 수 있는가?
 - 예측 결과를 점수만이 아니라 교사 행동까지 제시할 수 있는가?
 
 ---
 
-## 2. 프로젝트 진행
-
-- 데이터 설계 및 더미 데이터 생성
-- EDA/전처리 설계
-- 모델 학습 및 성능 검증
-- 리포트 자동화 로직 설계
-- FastAPI 백엔드 구현
-- React 프론트엔드 구현
-- Docker/Render 배포
-- 이슈 분석/회고 문서화(`docs/`)
-
----
-
-## 3. 핵심 기능
+## 2. 핵심 기능
 
 - CSV 업로드 기반 위험 예측 (`POST /api/predict`)
 - 학교/학급별 평가 정책 입력
@@ -63,7 +47,7 @@
 
 ---
 
-## 4. 기술 스택
+## 3. 기술 스택
 
 ### Backend / ML
 
@@ -88,90 +72,18 @@
 
 ---
 
-## 5. 프로젝트 진행 흐름
+## 4. 프로젝트 로드맵
 
-1. EDA 및 전처리 방향 수립 (Notebook)
-2. 모델 학습/검증 실험 (Notebook)
-3. 실험 코드를 파이썬 모듈/스크립트로 전환
-4. 개입전략 및 리포트 자동화 로직 추가
-5. FastAPI 백엔드 구현
-6. React 프론트엔드 구현
-7. Docker/Render 배포
-
-### Architecture Overview
-
-본 서비스는 단일 Docker 컨테이너 기반의 Full-Stack ML 시스템으로 구성되어 있습니다.
-
-```mermaid
-flowchart LR
-
-  %% =======================
-  %% User Layer
-  %% =======================
-  U[Teacher User]
-
-  %% =======================
-  %% Frontend
-  %% =======================
-  FE[React Dashboard<br/>Vite + TypeScript + SCSS]
-
-  %% =======================
-  %% Backend API
-  %% =======================
-  API[FastAPI<br/>/api/predict<br/>/api/download]
-
-  %% =======================
-  %% ML Pipeline
-  %% =======================
-  PRE[Preprocessing Pipeline<br/>- validate_schema<br/>- missing flags<br/>- encoding]
-  MODEL[Logistic Regression Model<br/>predict_proba]
-  REPORT[Report Logic<br/>- risk_level<br/>- top_reasons<br/>- score_guidance<br/>- absence_limit]
-
-  %% =======================
-  %% Data
-  %% =======================
-  CSV[(Uploaded CSV)]
-  POLICY[(Evaluation Policy JSON)]
-  MODELFILE[(models/logistic_model.joblib)]
-
-  %% =======================
-  %% Flow
-  %% =======================
-  U -->|Upload CSV + Policy| FE
-  FE -->|POST /api/predict| API
-
-  API --> CSV
-  API --> POLICY
-  API --> MODELFILE
-
-  API --> PRE
-  PRE --> MODEL
-  MODEL --> REPORT
-  REPORT --> API
-
-  API -->|Prediction JSON| FE
-  FE -->|GET /api/download| API
-
-  %% =======================
-  %% Deployment Context
-  %% =======================
-  subgraph Render["Render (Single Docker Web Service)"]
-    FE
-    API
-    PRE
-    MODEL
-    REPORT
-  end
-```
-
-1. 교사는 CSV 파일과 평가 정책(JSON)을 업로드합니다.
-2. React 대시보드는 /api/predict 엔드포인트로 데이터를 전송합니다.
-3. FastAPI는 업로드된 데이터를 전처리 파이프라인에 전달합니다.
-4. 전처리 결과는 학습된 Logistic Regression 모델로 전달되어 위험 확률(risk_proba)이 계산됩니다.
-5. 예측 결과는 report_logic 모듈을 통해 교사 개입 가능한 형태의 컬럼(top_reasons, score_guidance, action 등)으로 확장됩니다.
-6. 최종 결과는 JSON으로 프론트엔드에 반환되며, 필요 시 CSV 파일로 다운로드할 수 있습니다.
-
-배포 환경에서는 React 빌드 결과(client/dist)를 FastAPI가 정적 파일로 직접 서빙하며, Render 단일 Web Service에서 API와 프론트엔드를 함께 운영합니다.
+- [x] 기획
+- [x] 데이터 설계 및 더미 데이터 생성
+- [x] EDA 및 전처리 방향 수립 (Notebook)
+- [x] 모델 학습/검증 실험 (Notebook)
+- [x] 실험 코드를 파이썬 모듈/스크립트로 전환
+- [x] 개입전략 및 리포트 자동화 로직 추가
+- [x] FastAPI 백엔드 구현
+- [x] React 프론트엔드 구현
+- [x] Docker/Render 배포
+- [x] 이슈 분석/회고 문서화(`docs/`)
 
 ### 1단계: EDA와 전처리
 
@@ -329,7 +241,11 @@ Permutation Importance(`reports/tables/permutation_importance.csv`)
 - Render 단일 서비스 배포
 - 서비스 URL: https://maplight.onrender.com
 
-> 페이지 스크린샷 (PC / Mobile): [`screenshots.md`](docs/_README_screenshots.md)
+---
+
+## 5. 프로젝트 프리뷰
+
+웹 페이지 스크린샷 (PC / Mobile): [`screenshots.md`](docs/_README_screenshots.md)
 
 ---
 
@@ -339,5 +255,58 @@ Permutation Importance(`reports/tables/permutation_importance.csv`)
 - 모델 선택/평가 기준을 교육 개입 목적과 연결해 설명 가능
 - 예측 결과를 교사 행동 전략까지 확장한 리포트 자동화
 - 데이터/모델/API/UI/배포 전 과정을 경험
+
+---
+
+## 7. 프로젝트 한계 및 개선점
+
+- 더미 데이터 기반 실험으로 실제 학교 데이터 일반화 검증의 필요하다.
+  - 개인정보 및 교육청 데이터를 접근할 수 있는가의 고민이 필요하다.
+- Logistic Regression 단일 모델 구조로 비선형 관계를 충분히 반영하지 못한다.
+  - RandomForest / XGBBoost 등의 비교 실험 등을 추가할 필요성이 있다.
+- 모델 설명은 전역 중요도 중심이며, LLM을 통해 개별 학생의 교사 피드백 요소를 추가해도 좋을 것 같다.
+- 정책 기반 성취율 계산은 사용자 입력에 의존하며 자동 검증 기능이 제한적입니다.
+  - 나이스 API(존재한다면), 전자교과서와의 연동 방향성도 좋은 것 같다.
+- 단일 세션 기반 구조로 데이터 영속성(DB)이 존재하지 않는다.
+  - 현재의 프로젝트에서는 DB의 필요성이 부족하지만 추후 규모가 커지게 된다면 필요할 것 같다.
+  - 당장 새로고침시 초기화를 막으려면 쿠키나 캐시를 이용하는 것도 나쁘지 않아 보인다.
+  - DB를 통해 히스토리 기능을 추가해 변화하는 과정을 제공하는 것도 좋아보인다.
+
+---
+
+## 8. 문서
+
+<details>
+<summary>문서 목록 보기 / 접기</summary>
+
+<br />
+
+| 분류        | 문서                                                                                                                                         | 설명                                                                 |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 개발 온보딩 | [`docs/_README_screenshots.md`](docs/_README_screenshots.md)                                                                                 | README용 화면 스크린샷(PC/Mobile) 정리                               |
+| 개발 온보딩 | [`README_DEV.md`](README_DEV.md)                                                                                                             | 로컬 실행, 환경변수, 점검 체크리스트, Docker/배포, 재현 절차         |
+| 개발        | [`docs/dev_API_SPEC.md`](docs/dev_API_SPEC.md)                                                                                               | 백엔드 API 엔드포인트, 요청/응답 형식, 에러 응답, `policy` 스펙 정리 |
+| 개발        | [`docs/dev_PROJECT_STRUCTURE.md`](docs/dev_PROJECT_STRUCTURE.md)                                                                             | 프로젝트 디렉터리 구조, 계층 책임, 실행/배포 관점 파일 관계          |
+| 이슈        | [`docs/issues_backend_frontend_guidance_design.md`](docs/issues_backend_frontend_guidance_design.md)                                         | 백엔드/프론트 연계 가이드 및 디자인 관련 이슈 정리                   |
+| 이슈        | [`docs/issues_docker_desktop_ports_not_visible.md`](docs/issues_docker_desktop_ports_not_visible.md)                                         | Docker Desktop에서 포트 노출이 보이지 않는 문제 정리                 |
+| 이슈        | [`docs/issues_dummy_dataset_generation.md`](docs/issues_dummy_dataset_generation.md)                                                         | 더미 데이터셋 생성 과정에서의 이슈와 해결 기록                       |
+| 이슈        | [`docs/issues_filter_popover_scroll_and_positioning.md`](docs/issues_filter_popover_scroll_and_positioning.md)                               | 필터 팝오버 스크롤/위치 문제 해결 기록                               |
+| 이슈        | [`docs/issues_table_sticky_and_horizontal_scroll.md`](docs/issues_table_sticky_and_horizontal_scroll.md)                                     | 테이블 sticky header / 가로 스크롤 관련 이슈 정리                    |
+| 이슈        | [`docs/issues_technical_issues_and_resolutions.md`](docs/issues_technical_issues_and_resolutions.md)                                         | 개발 중 기술 이슈와 해결 내역 종합 정리                              |
+| 이슈        | [`docs/issues_upload_not_navigate_to_dashboard_in_docker.md`](docs/issues_upload_not_navigate_to_dashboard_in_docker.md)                     | Docker 환경에서 업로드 후 대시보드 이동 실패 이슈 정리               |
+| 학습        | [`docs/study_deployment_env_hardcoding_checklist.md`](docs/study_deployment_env_hardcoding_checklist.md)                                     | 배포 환경 하드코딩 점검 체크리스트 정리                              |
+| 학습        | [`docs/study_docker_usage_and_dockerfile_guide.md`](docs/study_docker_usage_and_dockerfile_guide.md)                                         | Docker 사용법 및 Dockerfile 구성 가이드                              |
+| 학습        | [`docs/study_FastAPI_File_Upload_Guide.md`](docs/study_FastAPI_File_Upload_Guide.md)                                                         | FastAPI 파일 업로드 처리 학습 문서                                   |
+| 학습        | [`docs/study_FastAPI_structure_guide.md`](docs/study_FastAPI_structure_guide.md)                                                             | FastAPI 프로젝트 구조/분리 방식 학습 정리                            |
+| 학습        | [`docs/study_frontend_backend_browser_access_local_vs_docker_guide.md`](docs/study_frontend_backend_browser_access_local_vs_docker_guide.md) | 로컬 vs Docker 환경에서 브라우저 접근 차이 정리                      |
+| 학습        | [`docs/study_pandas_apply_mechanism.md`](docs/study_pandas_apply_mechanism.md)                                                               | pandas `apply` 동작 방식 학습 정리                                   |
+| 학습        | [`docs/study_python_exception_guide.md`](docs/study_python_exception_guide.md)                                                               | Python 예외 처리 기본/패턴 정리                                      |
+| 학습        | [`docs/study_python_functions.md`](docs/study_python_functions.md)                                                                           | Python 함수 개념/작성 패턴 학습 정리                                 |
+| 학습        | [`docs/study_react_structure_guide.md`](docs/study_react_structure_guide.md)                                                                 | React 프로젝트 구조 설계 가이드 정리                                 |
+| 학습        | [`docs/study_render_single_service_deployment_guide.md`](docs/study_render_single_service_deployment_guide.md)                               | Render 단일 서비스 배포 방식 학습 정리                               |
+| 학습        | [`docs/study_requirements_txt_guide.md`](docs/study_requirements_txt_guide.md)                                                               | `requirements.txt` 관리/구성 가이드 정리                             |
+| 학습        | [`docs/study_scss_color_functions.md`](docs/study_scss_color_functions.md)                                                                   | SCSS 색상 함수 사용법/패턴 정리                                      |
+
+</details>
 
 ---

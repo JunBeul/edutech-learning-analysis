@@ -1,65 +1,36 @@
-﻿# 개발/재현 가이드 (README_DEV)
+﻿# 개발/운영/재현 가이드 (README_DEV)
 
-프로젝트를 로컬에서 실행하고, 재현하고, 점검하기 위한 문서입니다.
-프로젝트 배경/성과 중심 설명은 루트 README를 참고하고, 이 문서는 실행/환경/API/배포 재현에 집중합니다.
+프로젝트를 로컬에서 실행하고, 운영 환경 기준으로 점검하고, 클린 클론 상태에서 재현하기 위한 문서입니다.
+프로젝트 배경/성과 중심 설명은 루트 README를 참고하고, 상세 API/구조 문서는 본 문서 하단 링크를 참고하세요.
 
 - 서비스 URL: https://maplight.onrender.com
 - 루트 README: [`README.md`](README.md)
 
 ---
 
-## 프로젝트 디렉터리
+## INDEX
 
-```text
-edutech-risk-prediction/
-├─ backend/
-│  ├─ api/                  # FastAPI 엔드포인트
-│  ├─ src/                  # 전처리/리포트 공통 로직
-│  └─ scripts/              # 학습/리포트/스모크 테스트
-├─ client/                  # React 대시보드
-├─ data/dummy/              # 더미 데이터
-├─ models/                  # 모델 산출물
-├─ reports/                 # 지표/이미지/리포트
-└─ docs/                    # 이슈/회고/학습 문서
-```
+1. 실행 환경 준비
+2. 환경변수 설정
+3. 로컬 실행 방법
+4. Docker/배포
+5. API SPEC
+6. 프로젝트 구조
 
 ---
 
-## 빠른 진입 순서
+## 1. 실행 환경 준비
 
-클린 클론 기준으로 가장 빠른 확인 순서는 아래와 같습니다.
-
-1. `1. 실행 환경`에서 Python/Node 버전과 가상환경 준비
-2. `2. 환경변수`에서 루트 `.env`, `client/.env` 생성
-3. `3. 로컬 실행`의 `0) 모델 파일 확인`으로 모델 파일 생성
-4. `3. 로컬 실행`에서 `npm run dev` 실행
-5. `7. API 스펙 요약`의 헬스체크/샘플 API로 동작 확인
-
----
-
-## 1. 실행 환경
-
-### 필수
+### 요구 사항
 
 - Python 3.11+
 - Node.js 20+
 
-### 권장: 가상환경
+### 가상환경 생성/활성화
 
 ```bash
 python -m venv .venv
-```
-
-Linux/macOS:
-
-```bash
-source .venv/bin/activate
-```
-
-Windows PowerShell:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
+.venv\Scripts\Activate.ps1
 ```
 
 ### 패키지 설치
@@ -70,9 +41,14 @@ npm install
 npm --prefix client install
 ```
 
+> 참고:
+>
+> - 루트 `npm install`은 통합 개발 스크립트(`concurrently`) 실행에 필요합니다.
+> - `client` 의존성은 별도로 설치해야 프론트가 실행됩니다.
+
 ---
 
-## 2. 환경변수
+## 2. 환경변수 설정
 
 ### 루트 `.env` (백엔드)
 
@@ -124,13 +100,18 @@ Windows PowerShell:
 Copy-Item client/.env.example client/.env
 ```
 
+> 설정 팁:
+>
+> - 로컬 개발에서는 `VITE_API_BASE_URL=http://127.0.0.1:8000` 권장
+> - 배포/프록시 환경에서 same-origin으로 붙일 때는 빈 값 전략을 사용할 수 있음(빌드 구성 기준)
+
 ---
 
-## 3. 로컬 실행
+## 3. 로컬 실행 방법
 
-### 0) 모델 파일 확인 (클린 클론 필수)
+### 모델 생성
 
-`models/logistic_model.joblib`가 없으면 `POST /api/predict`에서 500 에러가 발생합니다.
+`models/logistic_model.joblib`가 없으면 `POST /api/predict`에서 `500` 에러가 발생합니다.
 
 ```bash
 python backend/scripts/train_model.py
@@ -152,184 +133,74 @@ npm run dev:back
 npm run dev:front
 ```
 
-### 기본 동작 확인
+### 기본 동작 확인 (빠른 확인)
 
 - 헬스체크: `GET http://127.0.0.1:8000/api/health`
 - 샘플 CSV 다운로드: `GET http://127.0.0.1:8000/api/sample/dummy-midterm-like-labeled`
+- 프론트 접속: `http://localhost:5173`
 
----
+### 기능 재현 확인
 
-## 4. 데이터 계약(업로드 스키마)
+1. `GET /api/health` 확인
+2. 샘플 CSV 다운로드 확인
+3. 프론트에서 더미 CSV 업로드 + 평가 정책 입력
+4. 예측 결과 테이블 확인
+5. 리포트 CSV 다운로드 확인
 
-필수 컬럼:
-
-- `student_id`
-- `midterm_score`
-- `final_score`
-- `performance_score`
-- `assignment_count`
-- `participation_level`
-- `question_count`
-- `night_study`
-- `absence_count`
-- `behavior_score`
-
-중간 시점 데이터에서 일부 점수(`midterm_score`, `final_score`, `performance_score`) 결측/all-NaN이 발생하는 케이스를 전제로 설계되어 있습니다.
-
----
-
-## 5. 전처리 파이프라인 요약
-
-`backend/src/preprocessing.py`
-
-주요 처리:
-
-- 스키마 검증 (`validate_schema`)
-- 컬럼 정리/중복 제거/수치형 변환 (`basic_cleaning`)
-- 결측 플래그 생성 (`*_missing`)
-- 결측치 보정 (`median/mean`, all-NaN은 fallback 상수)
-- 참여도 인코딩 (`participation_level_num`)
-- 성취율 계산 (`achievement_rate`)
-- 라벨 생성 옵션 (`at_risk`)
-
-라벨 규칙(기본):
-
-- `at_risk = (achievement_rate < 40) OR (absence_count >= ceil(total_sessions * 1/3))`
-
----
-
-## 6. 모델 학습/추론
-
-### 학습
-
-`backend/scripts/train_model.py`
-
-- 모델: `Pipeline(SimpleImputer + LogisticRegression)`
-- 핵심 옵션: `class_weight='balanced'`, `max_iter=1000`, `random_state=42`
-- 피처: `backend/src/config.py`의 `FEATURE_COLS`
-- 출력: `models/logistic_model.joblib`
-
-```bash
-python backend/scripts/train_model.py
-```
-
-### 리포트 생성(배치)
-
-`backend/scripts/generate_prediction_report.py`
-
-```bash
-python backend/scripts/generate_prediction_report.py
-```
-
-출력:
-
-- `reports/tables/prediction_report_YYYYMMDD.csv`
-
-### 스모크 테스트
-
-`backend/scripts/smoke_test_preprocessing.py`
+### 선택 검증 (전처리 스모크 테스트)
 
 ```bash
 python backend/scripts/smoke_test_preprocessing.py
 ```
 
-검증 항목:
-
-- all-NaN 컬럼 보정 동작
-- missing flag 생성 동작
-- 라벨 분포 유효성
-
 ---
 
-## 7. API 스펙 요약
+## 4. Docker/배포
 
-`backend/api/main.py`
-
-- `GET /`
-  - `client/dist/index.html` 존재 시 프론트 서빙
-  - 없으면 API 메시지 반환
-- `GET /api/health`
-- `GET /api/sample/dummy-midterm-like-labeled`
-- `POST /api/predict`
-  - multipart: `file`(CSV), `policy`(JSON 문자열)
-  - query: `mode=full|compact`
-- `GET /api/download/{filename}`
-
-### policy 예시
-
-```json
-{
-  "threshold": 0.4,
-  "midterm_max": 100,
-  "midterm_weight": 40,
-  "final_max": 100,
-  "final_weight": 40,
-  "performance_max": 100,
-  "performance_weight": 20,
-  "total_classes": 160
-}
-```
-
-### 리포트 확장 로직
-
-`backend/src/report_logic.py`
-
-- 위험 등급: `High(>=0.70)`, `Medium(>=0.40)`, `Low`
-- 개입 권장 문구(`action`)
-- 참여 위험 지표(`participation_risk_score`, `participation_flag`)
-- 결석 허용 계산(`absence_limit`, `remaining_absence_allowance`)
-- 점수 가이드(`score_guidance`)
-- 주요 사유(`top_reasons`)
-
----
-
-## 8. 프론트 구조 요약
-
-- 페이지
-  - `client/src/pages/LandingPage.tsx`
-  - `client/src/pages/DashboardPage.tsx`
-- 업로드
-  - `client/src/components/upload/UploadModal.tsx`
-- 대시보드
-  - 테이블/필터/컬럼 선택/상세 드로어/모바일 플로팅 네비게이션
-- API 유틸
-  - `client/src/shared/api.ts` (`buildApiUrl`, `predictCsv`)
-
----
-
-## 9. Docker/배포
-
-`Dockerfile` 기준:
-
-- 멀티스테이지 빌드
-  - Stage 1: React 빌드
-  - Stage 2: FastAPI 런타임
-- 단일 컨테이너에서 API + 정적 프론트 서빙
-- `PORT` 환경변수 기반 실행(Render 호환)
-
-### 로컬 Docker 검증
+### 4.1 Docker 이미지 빌드 (로컬 검증용)
 
 ```bash
-docker build -t edutech-risk-prediction:local .
-docker run --rm -d -p 8000:8000 --name edutech-app edutech-risk-prediction:local
+docker build -t edutech-risk-prediction .
 ```
+
+설명:
+
+- Dockerfile은 멀티 스테이지 빌드입니다.
+- 1단계에서 `client/`를 빌드해 `client/dist` 생성
+- 2단계에서 Python 런타임 + FastAPI + 정적 파일 서빙 구성
+- 빌드 중 기본 모델(`models/logistic_model.joblib`)을 생성합니다.
+
+### 4.2 Docker 컨테이너 실행 (로컬)
+
+```bash
+docker run --rm -p 8000:8000 edutech-risk-prediction
+```
+
+접속:
+
+- 앱/루트: `http://127.0.0.1:8000`
+- 헬스체크: `http://127.0.0.1:8000/api/health`
+
+### 4.3 배포 운영 체크포인트 (Render 기준)
+
+- 단일 Web Service에서 FastAPI + 프론트 정적 파일(`client/dist`) 동시 서빙
+- `PORT`는 플랫폼(Render) 주입값 사용
+- 배포 후 최소 확인:
+  - `GET /api/health`
+  - 루트(`/`) 접속 시 프론트 로딩
+  - `POST /api/predict` 동작
+  - 리포트 다운로드(`GET /api/download/{filename}`) 동작
 
 ---
 
-## 10. 주요 이슈/회고 문서
+## 5. API SPEC (링크)
 
-`docs/` 참고:
+- 상세 API 문서: [`docs/dev_API_SPEC.md`](docs/dev_API_SPEC.md)
 
-- `docs/issues_technical_issues_and_resolutions.md`
-- `docs/issues_upload_not_navigate_to_dashboard_in_docker.md`
-- `docs/issues_docker_desktop_ports_not_visible.md`
-- `docs/issues_table_sticky_and_horizontal_scroll.md`
-- `docs/issues_filter_popover_scroll_and_positioning.md`
-- `docs/study_render_single_service_deployment_guide.md`
+---
 
-핵심 교훈:
+## 6. 프로젝트 구조 (링크)
 
-- 결측은 숨기지 말고 정보로 보존(`*_missing` 피처)
-- 학습/추론 피처 계약을 명시적으로 고정
-- 전처리 변경 시 스모크 테스트로 회귀를 빠르게 확인
-- 배포 환경의 API base URL 하드코딩 리스크를 사전에 차단
+- 상세 구조 문서: [`docs/dev_PROJECT_STRUCTURE.md`](docs/dev_PROJECT_STRUCTURE.md)
+
+---
